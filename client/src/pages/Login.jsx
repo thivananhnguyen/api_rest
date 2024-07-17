@@ -1,47 +1,31 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import React, { useState } from 'react';
 import axios from 'axios';
 
-const schema = yup.object().shape({
-    name: yup.string().required('Name is required'),
-    password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters')
-});
+const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-const Login = ({ history }) => {
-    const { register, handleSubmit, formState: { errors } } = useForm({
-        resolver: yupResolver(schema)
-    });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:5000/api/login', { email, password });
+      localStorage.setItem('token', response.data.token);
+      window.location = '/profile';
+    } catch (error) {
+      console.error('Error logging in:', error);
+    }
+  };
 
-    const onSubmit = async (data) => {
-        try {
-            const res = await axios.post('http://localhost:5000/login', data);
-            localStorage.setItem('token', res.data.token);
-            history.push('/me');
-        } catch (error) {
-            console.error(error.response.data);
-        }
-    };
-
-    return (
-        <div>
-            <h1>Login</h1>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <div>
-                    <label>Name</label>
-                    <input name="name" {...register('name')} />
-                    {errors.name && <p>{errors.name.message}</p>}
-                </div>
-                <div>
-                    <label>Password</label>
-                    <input name="password" type="password" {...register('password')} />
-                    {errors.password && <p>{errors.password.message}</p>}
-                </div>
-                <button type="submit">Login</button>
-            </form>
-        </div>
-    );
+  return (
+    <div>
+      <h2>Login</h2>
+      <form onSubmit={handleSubmit}>
+        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  );
 };
 
 export default Login;

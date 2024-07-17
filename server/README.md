@@ -38,10 +38,11 @@ Installez les dépendances nécessaires :
    ```
 6. Pour la sécurité des en-têtes HTTP et la validation des données :
    ```bash
-   npm install helmet express-validator
+   npm install uuid  helmet express-validator
    ```
 7. Pour l'envoi d'e-mails :
    ```bash
    npm install nodemailer
    ```
+
 ---

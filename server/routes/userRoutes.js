@@ -1,33 +1,80 @@
 /* const express = require('express');
-const router = express.Router();
+const { check } = require('express-validator');
 const userController = require('../controllers/userController');
-const authMiddleware = require('../middlewares/authMiddleware');
+const authController = require('../controllers/AuthController');
+const authenticateToken = require('../middlewares/authenticateToken');
+const router = express.Router();
 
-// Routes
-router.get('/users', authMiddleware, userController.getAllUsers);
-router.get('/user/:id', authMiddleware, userController.getUserById);
-router.post('/user', authMiddleware, userController.createUser);
-router.put('/user/:id', authMiddleware, userController.updateUser);
-router.delete('/user/:id', authMiddleware, userController.deleteUser);
+router.post('/register', [
+    check('username').notEmpty().withMessage('Username is required'),
+    check('email').isEmail().withMessage('Email is required'),
+    check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+    check('confirmPassword').custom((value, { req }) => value === req.body.password).withMessage('Passwords do not match')
+], userController.createUser);
 
-module.exports = router; */
-// src/routes/userRoutes.js
+router.get('/users', authenticateToken, userController.getAllUsers);
+router.get('/user/:id', authenticateToken, userController.getUserById);
+
+router.post('/users', [
+    check('username').isString().withMessage('Username must be a string'),
+    check('email').isEmail().withMessage('Email is required'),
+    check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
+], userController.createUser);
+
+router.put('/user/:id', [
+    check('username').isString().withMessage('Username must be a string'),
+    check('email').isEmail().withMessage('Email is required'),
+    check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
+], authenticateToken, userController.updateUser);
+
+router.delete('/user/:id', authenticateToken, userController.deleteUser);
+
+router.post('/login', [
+    check('email').isEmail().withMessage('Email must be a string'),
+    check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
+], authController.login);
+
+router.get('/me', authenticateToken, authController.getMe);
+
+module.exports = router;
+ */
+
 const express = require('express');
 const { check } = require('express-validator');
 const userController = require('../controllers/userController');
-const authMiddleware = require('../middlewares/authMiddleware');
+const authController = require('../controllers/AuthController');
+const authenticateToken = require('../middlewares/authenticateToken');
 const router = express.Router();
 
-router.get('/users', userController.getAllUsers);
-router.get('/user/:id', userController.getUserById);
-router.post('/users', [
-    check('username').isString(),
-    check('password').isLength({ min: 6 })
+router.post('/register', [
+    check('username').notEmpty().withMessage('Username is required'),
+    check('email').isEmail().withMessage('Email is required'),
+    check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+    check('confirmPassword').custom((value, { req }) => value === req.body.password).withMessage('Passwords do not match')
 ], userController.createUser);
+
+router.get('/users', authenticateToken, userController.getAllUsers);
+router.get('/user/:id', authenticateToken, userController.getUserById);
+
+router.post('/users', [
+    check('username').isString().withMessage('Username must be a string'),
+    check('email').isEmail().withMessage('Email is required'),
+    check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
+], userController.createUser);
+
 router.put('/user/:id', [
-    check('username').isString(),
-    check('password').isLength({ min: 6 })
-], userController.updateUser);
-router.delete('/user/:id', userController.deleteUser);
+    check('username').isString().withMessage('Username must be a string'),
+    check('email').isEmail().withMessage('Email is required'),
+    check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
+], authenticateToken, userController.updateUser);
+
+router.delete('/user/:id', authenticateToken, userController.deleteUser);
+
+router.post('/login', [
+    check('email').isEmail().withMessage('Email must be a string'),
+    check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
+], authController.login);
+
+router.get('/me', authenticateToken, authController.getMe);
 
 module.exports = router;

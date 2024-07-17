@@ -38,7 +38,10 @@ Installez les dépendances nécessaires :
    ```
 6. Pour la sécurité des en-têtes HTTP et la validation des données :
    ```bash
-   npm install uuid  helmet express-validator
+   npm install uuid  helmet express-validator 
+
+
+   npm install pg pg-hstore
    ```
 7. Pour l'envoi d'e-mails :
    ```bash

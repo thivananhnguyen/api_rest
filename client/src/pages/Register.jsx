@@ -201,7 +201,6 @@ const MainContainer = styled.div`
   align-items: center;
   min-height: 100vh;
   background-color: #fff;
-  margin-top: 3.2em;
 `;
 
 const FormContainer = styled.div`
@@ -212,7 +211,6 @@ const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start; 
-  margin-top: 2em; 
   max-width: 600px;
 `;
 

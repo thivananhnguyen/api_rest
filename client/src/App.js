@@ -6,12 +6,13 @@ import UserProfile from './pages/UserProfile';
 import UserList from './pages/UserList.jsx';
 import AddUser from './pages/AddUser.jsx';
 import UserDetails from './pages/UserDetails';
-import AdminDashboard from './pages/AdminDashboard';
+import Navbar from './components/Navbar';
 import './axiosConfig';
 
 const App = () => {
     return (
         <Router>
+            <Navbar />
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
@@ -19,7 +20,6 @@ const App = () => {
                 <Route path="/users" element={<UserList />} />
                 <Route path="/add-user" element={<AddUser />} />
                 <Route path="/user/:id" element={<UserDetails />} />
-                <Route path="/" element={<AdminDashboard />} />
             </Routes>
         </Router>
     );

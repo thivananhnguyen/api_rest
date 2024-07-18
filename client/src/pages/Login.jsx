@@ -156,7 +156,6 @@ const LoginForm = styled.form`
   display: flex;
   flex-direction: column;
   align-items: flex-start; 
-  margin-top: 1em; 
   max-width: 600px;
 `;
 
@@ -192,8 +191,7 @@ const Button = styled.button`
   width: 100%;
   height: 50px;
   padding: 0.25rem;
-  font-size: 1.875rem;
-  line-height: 36px;
+  font-size: 1rem;
   color: #FFFFFF;
   border: none;
   outline: none;

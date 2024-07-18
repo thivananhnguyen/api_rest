@@ -254,8 +254,7 @@ const Button = styled.button`
   width: 100%;
   height: 50px;
   padding: 0.25rem;
-  font-size: 1.875rem;
-  line-height: 36px;
+  font-size: 1rem;
   color: #FFFFFF;
   border: none;
   outline: none;

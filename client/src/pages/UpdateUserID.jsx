@@ -104,10 +104,10 @@ const UserDetail = () => {
   return (
     <MainContainer>
       <Helmet>
-        <title>User Detail</title>
+        <title>Update User Detail</title>
       </Helmet>
       <FormContainer>
-        <Title>User Detail</Title>
+        <Title>Update User Detail</Title>
         <Form>
           <FormGroup>
             <Label>Username:</Label>

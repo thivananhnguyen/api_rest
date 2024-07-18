@@ -19,6 +19,23 @@ const createUser = async (username, email, password) => {
   }
 };
 
+const addUser = async (username, email, password) => {
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const id = uuidv4();
+    const query = {
+      text: 'INSERT INTO users (id, username, email, password) VALUES ($1, $2, $3, $4) RETURNING *',
+      values: [id, username, email, hashedPassword],
+    };
+    const res = await pool.query(query);
+    return res.rows[0];
+  } catch (error) {
+    console.error('Error creating user:', error);
+    throw error;
+  }
+};
+
+
 const getUserById = async (id) => {
   try {
     const query = {
@@ -89,6 +106,7 @@ const getUserByEmail = async (email) => {
 
 module.exports = {
   createUser,
+  addUser,
   getUserById,
   getAllUsers,
   updateUser,

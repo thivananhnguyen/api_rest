@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import UserProfile from './pages/UserProfile';
 import UserList from './pages/UserList.jsx';
+import AddUser from './pages/AddUser.jsx';
 import UserDetails from './pages/UserDetails';
 import AdminDashboard from './pages/AdminDashboard';
 import './axiosConfig';
@@ -16,6 +17,7 @@ const App = () => {
                 <Route path="/register" element={<Register />} />
                 <Route path="/me" element={<UserProfile />} />
                 <Route path="/users" element={<UserList />} />
+                <Route path="/add-user" element={<AddUser />} />
                 <Route path="/user/:id" element={<UserDetails />} />
                 <Route path="/" element={<AdminDashboard />} />
             </Routes>

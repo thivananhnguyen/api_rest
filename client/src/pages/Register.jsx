@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -7,33 +8,47 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleRegister = async () => {
+    if (password !== confirmPassword) {
+      setErrorMessage('Passwords do not match');
+      return;
+    }
+
     try {
-      await axios.post('http://localhost:5000/api/register', { username, email, password, confirmPassword });
-      window.location = '/login'; // Chuyển hướng đến trang đăng nhập sau khi đăng ký thành công
+      const newUser = { username, email, password, confirmPassword };
+      await axios.post('http://localhost:5000/api/users', newUser);
+      alert('User added successfully');
+      navigate('/login');
     } catch (error) {
-      if (error.response) {
-        console.log(error.response.data); // Log thông tin lỗi từ server vào console
-        setErrorMessage(error.response.data.message); // Hiển thị thông báo lỗi cho người dùng
-      } else {
-        console.error('Error registering:', error); // Log lỗi nếu không có phản hồi từ server
-      }
+      console.error('Error adding user:', error.response ? error.response.data : error);
+      setErrorMessage('Failed to add user');
     }
   };
 
   return (
     <div>
       <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        <input type="password" placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-        <button type="submit">Register</button>
-      </form>
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+      <div>
+        <label>Username:</label>
+        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+      </div>
+      <div>
+        <label>Email:</label>
+        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      </div>
+      <div>
+        <label>Password:</label>
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      </div>
+      <div>
+        <label>Confirm Password:</label>
+        <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+      </div>
+      <button onClick={handleRegister}>Register</button>
+      <p>Pas de compte? <Link to="/login">Connectez-vous</Link></p>
     </div>
   );
 };

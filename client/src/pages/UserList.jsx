@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 
 const UsersList = () => {
   const [users, setUsers] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -28,18 +30,115 @@ const UsersList = () => {
   };
 
   return (
-    <div>
-      <h2>Users List</h2>
-      <ul>
-        {users.map((user) => (
-          <li key={user.id}>
-            <Link to={`/user/${user.id}`}>{user.username}</Link> - {user.email}
-            <button onClick={() => handleDeleteUser(user.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <Container>
+      <Header>
+        <Title>Users List</Title>  
+        <AddButton onClick={() => navigate('/add-user')}>Add User</AddButton>
+      </Header>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableHeader>ID</TableHeader>
+            <TableHeader>Username</TableHeader>
+            <TableHeader>Email</TableHeader>
+            <TableHeader>Action</TableHeader>
+          </TableRow>
+        </TableHead>
+        <tbody>
+          {users.map(user => (
+            <TableRow key={user.id}>
+              <TableCell>{user.id}</TableCell>
+              <TableCell><Link to={`/user/${user.id}`}>{user.username}</Link></TableCell>
+              <TableCell>{user.email}</TableCell>
+              <TableCell>
+                <Button onClick={() => navigate(`/user/${user.id}`)}>Update</Button>
+                <Button onClick={() => handleDeleteUser(user.id)}>Delete</Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </tbody>
+      </Table>
+    </Container>
   );
 };
 
 export default UsersList;
+
+const Container = styled.div`
+  padding: 20px;
+`;
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+`;
+
+const Title = styled.h2`
+  flex-grow: 1;
+  text-align: center;
+  margin: 0;
+`;
+
+const AddButton = styled.button`
+  padding: 10px 20px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #1e88e5;
+  }
+`;
+
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+`;
+
+const TableHead = styled.thead`
+  background-color: #f2f2f2;
+`;
+
+const TableRow = styled.tr`
+  &:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+`;
+
+const TableHeader = styled.th`
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+`;
+
+const TableCell = styled.td`
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+`;
+
+const Button = styled.button`
+  margin-right: 10px;
+  padding: 5px 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #45a049;
+  }
+
+  &:last-child {
+    background-color: #f44336;
+  }
+
+  &:last-child:hover {
+    background-color: #d32f2f;
+  }
+`;

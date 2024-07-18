@@ -97,12 +97,13 @@ const Register = () => {
     const escapedPassword = password.trim();
 
     try {
-      const res = await axios.post('http://localhost:5000/api/users/register', {
+      const res = await axios.post('http://localhost:5000/api/register', {
         username: escapedUsername,
         email: escapedEmail,
-        password: escapedPassword
+        password: escapedPassword,
+        confirmPassword: confirmPassword.trim()
       });
-
+      
       if (res.data.success) {
         alert(res.data.message);
         navigate('/login');

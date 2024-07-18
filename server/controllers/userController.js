@@ -31,7 +31,7 @@ const getUserById = async (req, res) => {
     }
 };
 
-
+/* ------------------ CREATE USER ----------------------*/
   const createUser = async (req, res) => {
     await check('username', 'Username is required').notEmpty().run(req);
     await check('email', 'Valid email is required').isEmail().run(req);
@@ -75,7 +75,7 @@ const getUserById = async (req, res) => {
     }
   };
 
-
+/* ------------------ ADD USER ----------------------*/
 const addUser = async (req, res) => {
     await check('username', 'Username is required').notEmpty().run(req);
     await check('email', 'Valid email is required').isEmail().run(req);
@@ -118,34 +118,57 @@ const addUser = async (req, res) => {
     }
   };
 
-
+/* ------------------ UPDATE USER ----------------------*/
 const updateUser = async (req, res) => {
-    await check('username', 'Username is required').notEmpty().run(req);
-    await check('email', 'Valid email is required').isEmail().run(req);
-    await check('password', 'Password is required').notEmpty().run(req);
-    await check('confirmPassword', 'Passwords do not match').custom((value, { req }) => value === req.body.password).run(req);
+  // Validate inputs
+  await check('username', 'Username is required').notEmpty().run(req);
+  await check('email', 'Valid email is required').isEmail().run(req);
 
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
+  if (req.body.password) {
+      await check('password', 'Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, and one number')
+          .custom(value => validatePassword(value)).run(req);
+  }
 
-    const { id } = req.params;
-    const { username, email, password } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+  }
 
-    try {
-        const user = await userModel.updateUser(id, username, email, password);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
+  const { id } = req.params;
+  const { username, email, password } = req.body;
 
-        res.json(user);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server Error');
-    }
+  // Escape and trim inputs
+  const escapedUsername = escapeHtml(username.trim());
+  const escapedEmail = escapeHtml(email.trim());
+
+  try {
+      // Check if email already exists
+      const existingUser = await userModel.getUserByEmail(escapedEmail);
+      if (existingUser && existingUser.id !== id) {
+          return res.status(400).json({ message: 'Email already exists' });
+      }
+
+      let updatedUser;
+
+      if (password) {
+          // Hash the new password
+          const hashedPassword = await bcrypt.hash(password.trim(), 10);
+          updatedUser = await userModel.updateUser(id, escapedUsername, escapedEmail, hashedPassword);
+      } else {
+          updatedUser = await userModel.updateUser(id, escapedUsername, escapedEmail);
+      }
+
+      if (!updatedUser) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+      res.json({ success: true, message: 'User updated successfully!', user: updatedUser }); 
+  } catch (error) {
+      console.error(error);
+      res.status(500).send('Server Error');
+  }
 };
 
+/* ------------------ DELETE USER ----------------------*/
 const deleteUser = async (req, res) => {
     const { id } = req.params;
 

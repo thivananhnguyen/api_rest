@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const navigate = useNavigate();
-
+  const role =  localStorage.getItem('role');
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -25,7 +25,11 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
     <NavbarContainer>
       <NavbarTitle>Admin Dashboard</NavbarTitle>
       <NavbarLinkContainer>
-        <NavbarLink to="/users">Manage Users</NavbarLink>
+        { (role === 'admin') && (
+          <NavbarLink to="/users">Manage Users</NavbarLink>
+        )
+        }
+        
         <NavbarLink to="/me">My Profile</NavbarLink>
         {isLoggedIn ? (
           <NavbarButton onClick={handleLogout}>Logout</NavbarButton>

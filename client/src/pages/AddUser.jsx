@@ -30,7 +30,7 @@ const AddUser = () => {
     username: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    role: 'user' // Default role is user
   });
 
   const [errorMessage, setErrorMessage] = useState({
@@ -40,7 +40,7 @@ const AddUser = () => {
     server: ''
   });
 
-  const { username, email, password } = formData;
+  const { username, email, password, role } = formData;
 
   const validateForm = () => {
     let valid = true;
@@ -85,9 +85,10 @@ const AddUser = () => {
       const res = await axios.post('http://localhost:5000/api/add-user', {
         username: escapedUsername,
         email: escapedEmail,
-        password: escapedPassword
+        password: escapedPassword,
+        role: role // Include role in the request body
       });
-      console.log(res)
+
       if (res.data.success) {
         alert(res.data.message);
         navigate('/login');
@@ -112,6 +113,10 @@ const AddUser = () => {
     }
   };
 
+  const handleRoleChange = (e) => {
+    setFormData({ ...formData, role: e.target.value });
+  };
+
   return (
     <Container>
       <Title>Add User</Title>
@@ -131,6 +136,29 @@ const AddUser = () => {
           <Label>Password:</Label>
           <Input type="password" value={password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
           {errorMessage.password && <Error>{errorMessage.password}</Error>}
+        </FormGroup>
+        <FormGroup>
+          <Label>Role:</Label>
+          <RadioGroup>
+            <RadioLabel>
+              <RadioInput
+                type="radio"
+                value="user"
+                checked={role === 'user'}
+                onChange={handleRoleChange}
+              />
+              User
+            </RadioLabel>
+            <RadioLabel>
+              <RadioInput
+                type="radio"
+                value="admin"
+                checked={role === 'admin'}
+                onChange={handleRoleChange}
+              />
+              Admin
+            </RadioLabel>
+          </RadioGroup>
         </FormGroup>
         <Button type="submit">Submit</Button>
       </form>
@@ -167,6 +195,19 @@ const Input = styled.input`
   width: 100%;
   padding: 8px;
   box-sizing: border-box;
+`;
+
+const RadioGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const RadioLabel = styled.label`
+  margin-bottom: 5px;
+`;
+
+const RadioInput = styled.input`
+  margin-right: 5px;
 `;
 
 const Button = styled.button`

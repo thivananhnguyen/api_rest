@@ -8,8 +8,8 @@ const createUser = async (username, email, password) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const id = uuidv4();
     const query = {
-      text: 'INSERT INTO users (id, username, email, password) VALUES ($1, $2, $3, $4) RETURNING *',
-      values: [id, username, email, hashedPassword],
+      text: 'INSERT INTO users (id, username, email, password, role) VALUES ($1, $2, $3, $4, $5 ) RETURNING *',
+      values: [id, username, email, hashedPassword, 'user'],
     };
     const res = await pool.query(query);
     return res.rows[0];
@@ -19,13 +19,13 @@ const createUser = async (username, email, password) => {
   }
 };
 
-const addUser = async (username, email, password) => {
+const addUser = async (username, email, password, role) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const id = uuidv4();
     const query = {
-      text: 'INSERT INTO users (id, username, email, password) VALUES ($1, $2, $3, $4) RETURNING *',
-      values: [id, username, email, hashedPassword],
+      text: 'INSERT INTO users (id, username, email, password, role) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      values: [id, username, email, hashedPassword, role],
     };
     const res = await pool.query(query);
     return res.rows[0];

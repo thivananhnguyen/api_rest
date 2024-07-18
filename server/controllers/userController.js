@@ -75,35 +75,6 @@ const getUserById = async (req, res) => {
     }
   };
 
-/* const addUser = async (req, res) => {
-    await check('username', 'Username is required').notEmpty().run(req);
-    await check('email', 'Valid email is required').isEmail().run(req);
-    await check('password', 'Password is required')
-        .notEmpty()
-        .isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
-        .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{6,}$/)
-        .withMessage('Password must contain at least one digit, one uppercase letter, one lowercase letter, and one special character');
-
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { username, email, password } = req.body;
-
-    try {
-        const existingUser = await userModel.getUserByEmail(email);
-        if (existingUser) {
-            return res.status(400).json({ message: 'Email is already registered' });
-        }
-
-        const user = await userModel.addUser(username, email, password);
-        res.json(user);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server Error');
-    }
-}; */
 
 const addUser = async (req, res) => {
     await check('username', 'Username is required').notEmpty().run(req);
@@ -119,7 +90,7 @@ const addUser = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
   
-    const { username, email, password } = req.body;
+    const { username, email, password, role } = req.body;
      
     try {
         
@@ -139,7 +110,7 @@ const addUser = async (req, res) => {
       const escapedPassword = await bcrypt.hash(password.trim(), 10);
   
       // Add user to database
-      const newUser = await userModel.addUser(escapedUsername, escapedEmail, escapedPassword);
+      const newUser = await userModel.addUser(escapedUsername, escapedEmail, escapedPassword, role);
       return res.status(201).json({ success: true, message: 'Utilisateur ajouter avec succès', user: newUser });
     } catch (error) {
       console.error(error);

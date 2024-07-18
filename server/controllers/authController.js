@@ -20,6 +20,7 @@ const login = async (req, res) => {
 
   try {
     const user = await userModel.getUserByEmail(email);
+    const role= user.role
     if (!user) {
       return res.status(400).json({ message: 'Email not registered' });
     }
@@ -39,7 +40,7 @@ const login = async (req, res) => {
 
     jwt.sign(payload, jwtSecret, { expiresIn: '1h' }, (err, token) => {
       if (err) throw err;
-      res.json({ success: true, token });
+      res.json({ success: true, token, role: role });
     });
   } catch (error) {
     console.error(error);

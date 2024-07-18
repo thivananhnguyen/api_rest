@@ -42,16 +42,16 @@ module.exports = router;
 const express = require('express');
 const userController = require('../controllers/userController');
 const authController = require('../controllers/AuthController');
-const authenticateToken = require('../middlewares/authenticateToken');
+const {authenticateToken, authenticateTokenAdmin }= require('../middlewares/authenticateToken');
 const router = express.Router();
 
 router.post('/register', userController.createUser);
 router.post('/login', authController.login);
-router.get('/users', authenticateToken, userController.getAllUsers);
-router.get('/user/:id', authenticateToken, userController.getUserById);
-router.post('/add-user', userController.addUser);
-router.put('/user/:id', authenticateToken, userController.updateUser);
-router.delete('/user/:id', authenticateToken, userController.deleteUser);
+router.get('/users', authenticateTokenAdmin, userController.getAllUsers);
+router.get('/user/:id', authenticateTokenAdmin, userController.getUserById);
+router.post('/add-user', authenticateTokenAdmin,userController.addUser);
+router.put('/user/:id', authenticateTokenAdmin, userController.updateUser);
+router.delete('/user/:id', authenticateTokenAdmin, userController.deleteUser);
 router.get('/me', authenticateToken, authController.getMe);
 
 module.exports = router;

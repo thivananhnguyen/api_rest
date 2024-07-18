@@ -77,6 +77,8 @@ const Login = ({ setIsLoggedIn }) => {
       if (res.data.success) {
         const token = res.data.token;
         localStorage.setItem('token', token);
+        localStorage.setItem('role', res.data.role);
+        console.log(res.data.role)
         setIsLoggedIn(true);
         setErrors({ email: '', password: '', server: '' });
         alert('Connexion réussie');

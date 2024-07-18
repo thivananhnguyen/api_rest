@@ -6,6 +6,7 @@ import styled from 'styled-components';
 const UsersList = () => {
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
+  const role =  localStorage.getItem('role');
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -33,9 +34,12 @@ const UsersList = () => {
     <Container>
       <Header>
         <Title>Users List</Title>  
-        <AddButton onClick={() => navigate('/add-user')}>Add User</AddButton>
+        {role === 'admin' && (
+          <AddButton onClick={() => navigate('/add-user')}>Add User</AddButton>
+        )}
       </Header>
-      <Table>
+      { (role === 'admin') ? (
+        <Table>
         <TableHead>
           <TableRow>
             <TableHeader>ID</TableHeader>
@@ -58,6 +62,11 @@ const UsersList = () => {
           ))}
         </tbody>
       </Table>
+        ):
+         (
+          <p>You have no right to access</p>
+        )}
+
     </Container>
   );
 };

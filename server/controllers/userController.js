@@ -32,7 +32,11 @@ const getUserById = async (req, res) => {
 const createUser = async (req, res) => {
     await check('username', 'Username is required').notEmpty().run(req);
     await check('email', 'Valid email is required').isEmail().run(req);
-    await check('password', 'Password is required').notEmpty().run(req);
+    await check('password', 'Password is required')
+        .notEmpty()
+        .isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
+        .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{6,}$/)
+        .withMessage('Password must contain at least one digit, one uppercase letter, one lowercase letter, and one special character');
     await check('confirmPassword', 'Passwords do not match').custom((value, { req }) => value === req.body.password).run(req);
 
     const errors = validationResult(req);
@@ -55,6 +59,7 @@ const createUser = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
 
 const updateUser = async (req, res) => {
     await check('username', 'Username is required').notEmpty().run(req);

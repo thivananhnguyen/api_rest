@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState }  from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -10,11 +10,14 @@ import Navbar from './components/Navbar';
 import './axiosConfig';
 
 const App = () => {
+
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
     return (
         <Router>
-            <Navbar />
+            <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
             <Routes>
-                <Route path="/login" element={<Login />} />
+                <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/me" element={<UserProfile />} />
                 <Route path="/users" element={<UserList />} />

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import PropTypes from 'prop-types'; 
 
-const Navbar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -13,7 +13,7 @@ const Navbar = () => {
     } else {
       setIsLoggedIn(false);
     }
-  }, []);
+  }, [setIsLoggedIn]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -30,17 +30,21 @@ const Navbar = () => {
         {isLoggedIn ? (
           <NavbarButton onClick={handleLogout}>Logout</NavbarButton>
         ) : (
-          <>
-            <NavbarLink to="/login">Login</NavbarLink>
-          </>
+          <NavbarLink to="/login">Login</NavbarLink>
         )}
       </NavbarLinkContainer>
     </NavbarContainer>
   );
 };
 
+Navbar.propTypes = {
+  isLoggedIn: PropTypes.bool.isRequired,
+  setIsLoggedIn: PropTypes.func.isRequired,
+};
+
 export default Navbar;
 
+// Styled components...
 const NavbarContainer = styled.div`
   background-color: #add8e6; 
   overflow: hidden;

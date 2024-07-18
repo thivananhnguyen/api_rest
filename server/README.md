@@ -42,6 +42,7 @@ Installez les dépendances nécessaires :
 
 
    npm install pg pg-hstore
+      npm install html-escaper
    ```
 7. Pour l'envoi d'e-mails :
    ```bash

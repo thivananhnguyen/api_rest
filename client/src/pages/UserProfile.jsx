@@ -1,35 +1,33 @@
-// UserProfile.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const UserProfile = () => {
-  const [user, setUser] = useState({});
+const MyProfile = () => {
+  const [profile, setProfile] = useState(null);
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchProfile = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/me', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        setUser(response.data);
+        const response = await axios.get('http://localhost:5000/api/me');
+        setProfile(response.data);
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error('Error fetching profile:', error);
       }
     };
 
-    fetchUserData();
+    fetchProfile();
   }, []);
+
+  if (!profile) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
-      <h2>User Profile</h2>
-      <p>Username: {user.username}</p>
-      <p>Email: {user.email}</p>
+      <h2>My Profile</h2>
+      <p>Username: {profile.username}</p>
+      <p>Email: {profile.email}</p>
     </div>
   );
 };
 
-export default UserProfile;
+export default MyProfile;

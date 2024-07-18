@@ -49,6 +49,7 @@ const escapeHtml = (unsafe) => {
   };
   
   const createUser = async (req, res) => {
+    console.log('Received data:', req.body); 
     await check('username', 'Username is required').notEmpty().run(req);
     await check('email', 'Valid email is required').isEmail().run(req);
     await check('password', 'Password is required')
@@ -64,7 +65,7 @@ const escapeHtml = (unsafe) => {
     }
   
     const { username, email, password } = req.body;
-  
+     
     try {
       // Check if email already exists
       const existingUser = await userModel.getUserByEmail(email);
@@ -75,11 +76,11 @@ const escapeHtml = (unsafe) => {
       // Escape HTML characters
       const escapedUsername = escapeHtml(username.trim());
       const escapedEmail = escapeHtml(email.trim());
-      const escapedPassword = password.trim();
+      const escapedPassword = await bcrypt.hash(password.trim(), 10);
   
       // Add user to database
-      const newUser = await userModel.addUser(escapedUsername, escapedEmail, escapedPassword);
-      res.json(newUser);
+      const newUser = await userModel.createUser(escapedUsername, escapedEmail, escapedPassword);
+      return res.status(201).json({ success: true, message: 'Utilisateur enregistré avec succès', user: newUser });
     } catch (error) {
       console.error(error);
       res.status(500).send('Server Error');
@@ -108,7 +109,7 @@ const addUser = async (req, res) => {
             return res.status(400).json({ message: 'Email is already registered' });
         }
 
-        const user = await userModel.createUser(username, email, password);
+        const user = await userModel.addUser(username, email, password);
         res.json(user);
     } catch (error) {
         console.error(error);

@@ -3,49 +3,142 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-const AddUser = () => {
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
-    const navigate = useNavigate();
+const escapeHtml = (unsafe) => {
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return unsafe.replace(/[&<>"']/g, (m) => map[m]);
+};
 
-  const handleAddUser = async () => {
+const validateEmail = (email) => {
+  const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return regexEmail.test(email.trim());
+};
+
+const validatePassword = (password) => {
+  const regexPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+  return regexPassword.test(password.trim());
+};
+
+const AddUser = () => {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+
+  const [errorMessage, setErrorMessage] = useState({
+    username: '',
+    email: '',
+    password: '',
+    server: ''
+  });
+
+  const { username, email, password } = formData;
+
+  const validateForm = () => {
+    let valid = true;
+    const newErrors = { username: '', email: '', password: '', server: '' };
+
+    const trimmedUsername = username.trim();
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedUsername) {
+      newErrors.username = "Le champ nom ne doit pas être vide.";
+      valid = false;
+    }
+
+    if (!validateEmail(trimmedEmail)) {
+      newErrors.email = "L'adresse e-mail n'est pas valide.";
+      valid = false;
+    }
+
+    if (!validatePassword(trimmedPassword)) {
+      newErrors.password = "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre.";
+      valid = false;
+    }
+
+    setErrorMessage(newErrors);
+    return valid;
+  };
+
+  const handleAddUser = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    // Trim and escape inputs
+    const escapedUsername = escapeHtml(username.trim());
+    const escapedEmail = escapeHtml(email.trim());
+    const escapedPassword = password.trim();
 
     try {
-      const newUser = { username, email, password};
-      await axios.post('http://localhost:5000/api/add-user', newUser);
-      alert('User added successfully');
-      navigate('/users');
-    } catch (error) {
-      console.error('Error adding user:', error.response ? error.response.data : error);
-      setErrorMessage('Failed to add user');
+      const res = await axios.post('http://localhost:5000/api/add-user', {
+        username: escapedUsername,
+        email: escapedEmail,
+        password: escapedPassword
+      });
+      console.log(res)
+      if (res.data.success) {
+        alert(res.data.message);
+        navigate('/login');
+      } else {
+        setErrorMessage((prevErrors) => ({
+          ...prevErrors,
+          server: res.data.message || 'Add failed'
+        }));
+      }
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.message) {
+        setErrorMessage((prevErrors) => ({
+          ...prevErrors,
+          server: err.response.data.message
+        }));
+      } else {
+        setErrorMessage((prevErrors) => ({
+          ...prevErrors,
+          server: 'Error add user'
+        }));
+      }
     }
   };
 
   return (
     <Container>
       <Title>Add User</Title>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      <FormGroup>
-        <Label>Username:</Label>
-        <Input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
-      </FormGroup>
-      <FormGroup>
-        <Label>Email:</Label>
-        <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-      </FormGroup>
-      <FormGroup>
-        <Label>Password:</Label>
-        <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-      </FormGroup>
-      <Button onClick={handleAddUser}>Submit</Button>
+      {errorMessage.server && <p style={{ color: 'red' }}>{errorMessage.server}</p>}
+      <form onSubmit={handleAddUser}>
+        <FormGroup>
+          <Label>Username:</Label>
+          <Input type="text" value={username} onChange={(e) => setFormData({ ...formData, username: e.target.value })} />
+          {errorMessage.username && <Error>{errorMessage.username}</Error>}
+        </FormGroup>
+        <FormGroup>
+          <Label>Email:</Label>
+          <Input type="email" value={email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+          {errorMessage.email && <Error>{errorMessage.email}</Error>}
+        </FormGroup>
+        <FormGroup>
+          <Label>Password:</Label>
+          <Input type="password" value={password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
+          {errorMessage.password && <Error>{errorMessage.password}</Error>}
+        </FormGroup>
+        <Button type="submit">Submit</Button>
+      </form>
     </Container>
   );
 };
 
 export default AddUser;
-
 
 const Container = styled.div`
   padding: 20px;
@@ -88,4 +181,9 @@ const Button = styled.button`
   &:hover {
     background-color: #1e88e5;
   }
+`;
+
+const Error = styled.span`
+  color: red;
+  font-size: 0.8em;
 `;

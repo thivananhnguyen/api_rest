@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { Helmet } from 'react-helmet';
 
 const UsersList = () => {
   const [users, setUsers] = useState([]);
@@ -32,6 +33,9 @@ const UsersList = () => {
 
   return (
     <Container>
+      <Helmet>
+        <title>Users List</title>
+      </Helmet>
       <Header>
         <Title>Users List</Title>  
         {role === 'admin' && (

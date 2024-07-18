@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Helmet } from 'react-helmet';
 
 const MyProfile = () => {
   const [profile, setProfile] = useState(null);
@@ -23,6 +24,9 @@ const MyProfile = () => {
 
   return (
     <div>
+      <Helmet>
+        <title>My Profile</title>
+      </Helmet>
       <h2>My Profile</h2>
       <p>Username: {profile.username}</p>
       <p>Email: {profile.email}</p>

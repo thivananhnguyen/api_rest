@@ -8,24 +8,33 @@ import AddUser from './pages/AddUser.jsx';
 import UpdateUserID from './pages/UpdateUserID';
 import Navbar from './components/Navbar';
 import './axiosConfig';
+import { AuthProvider } from '././components/AuthContext';
+import ProtectedRoute from '././components/ProtectedRoute';
 
 const App = () => {
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    return (
-        <Router>
-            <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-            <Routes>
-                <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/me" element={<UserProfile />} />
-                <Route path="/users" element={<UserList />} />
-                <Route path="/add-user" element={<AddUser />} />
-                <Route path="/user/:id" element={<UpdateUserID />} />
-            </Routes>
-        </Router>
-    );
-};
+  return (
+    <AuthProvider>
+      <Router>
+        <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+        <Routes>
+          <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/me" element={<UserProfile />} />
+
+          <Route element={<ProtectedRoute requiredRole="admin" />}>
+            <Route path="/users" element={<UserList />} />
+            <Route path="/add-user" element={<AddUser />} />
+            <Route path="/user/:id" element={<UpdateUserID />} />
+          </Route>
+          
+        </Routes>
+      </Router>
+    </AuthProvider>
+  );
+}
 
 export default App;
+ 

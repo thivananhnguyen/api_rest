@@ -123,11 +123,8 @@ const updateUser = async (req, res) => {
   // Validate inputs
   await check('username', 'Username is required').notEmpty().run(req);
   await check('email', 'Valid email is required').isEmail().run(req);
+  await check('role', 'Role is required').isIn(['user', 'admin']).run(req);
 
-  if (req.body.password) {
-      await check('password', 'Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, and one number')
-          .custom(value => validatePassword(value)).run(req);
-  }
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -135,7 +132,7 @@ const updateUser = async (req, res) => {
   }
 
   const { id } = req.params;
-  const { username, email, password } = req.body;
+  const { username, email, role } = req.body;
 
   // Escape and trim inputs
   const escapedUsername = escapeHtml(username.trim());
@@ -148,20 +145,12 @@ const updateUser = async (req, res) => {
           return res.status(400).json({ message: 'Email already exists' });
       }
 
-      let updatedUser;
-
-      if (password) {
-          // Hash the new password
-          const hashedPassword = await bcrypt.hash(password.trim(), 10);
-          updatedUser = await userModel.updateUser(id, escapedUsername, escapedEmail, hashedPassword);
-      } else {
-          updatedUser = await userModel.updateUser(id, escapedUsername, escapedEmail);
-      }
+      const updatedUser = await userModel.updateUser(id, escapedUsername, escapedEmail, role);
 
       if (!updatedUser) {
           return res.status(404).json({ message: 'User not found' });
       }
-      res.json({ success: true, message: 'User updated successfully!', user: updatedUser }); 
+      res.status(201).json({ success: true, message: 'User updated successfully!', user: updatedUser }); 
   } catch (error) {
       console.error(error);
       res.status(500).send('Server Error');

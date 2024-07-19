@@ -1,4 +1,4 @@
-import React from 'react';
+/* import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 
@@ -9,16 +9,22 @@ const ProtectedRoute = ({ requiredRole }) => {
 };
 
 export default ProtectedRoute;
-
-// ProtectedRoute.js
-/* import React from 'react';
+ */
+import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 
-const ProtectedRoute = () => {
+const ProtectedRoute = ({ requiredRole }) => {
   const { user } = useAuth();
+  const token = localStorage.getItem('token');
+  const userRole = localStorage.getItem('role');
 
-  return user && user.role === 'admin' ? <Outlet /> : <Navigate to="/login" />;
+  // Check if user is authenticated and has the required role
+  if (token && userRole === requiredRole) {
+    return <Outlet />;
+  }
+
+  return <Navigate to="/login" />;
 };
 
-export default ProtectedRoute; */
+export default ProtectedRoute;

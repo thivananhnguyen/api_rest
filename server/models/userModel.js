@@ -66,12 +66,11 @@ const getAllUsers = async () => {
 
 
 // ------------UPDATE USER BY ID -------------------/
-const updateUser = async (id, username, email, password) => {
+ const updateUser = async (id, username, email, role = 'user') => {
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
     const query = {
-      text: 'UPDATE users SET username = $1, email = $2, password = $3 WHERE id = $4 RETURNING *',
-      values: [username, email, hashedPassword, id],
+      text: 'UPDATE users SET username = $1, email = $2, role = $3 WHERE id = $4 RETURNING *',
+      values: [username, email, role, id],
     };
     const res = await pool.query(query);
     return res.rows[0];
@@ -79,7 +78,7 @@ const updateUser = async (id, username, email, password) => {
     console.error('Error updating user:', error);
     throw error;
   }
-};
+}; 
 
 // ------------ DELETE USER BY ID -------------------/
 const deleteUser = async (id) => {

@@ -22,19 +22,13 @@ const validateEmail = (email) => {
   return regexEmail.test(email.trim());
 };
 
-// Function to validate password
-const validatePassword = (password) => {
-  const regexPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
-  return regexPassword.test(password.trim());
-};
-
 const UserDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState({});
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [role, setRole] = useState('user'); // Default role
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
@@ -44,6 +38,7 @@ const UserDetail = () => {
         setUser(response.data);
         setUsername(response.data.username);
         setEmail(response.data.email);
+        setRole(response.data.role || 'user'); // Set default role if undefined
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
@@ -53,42 +48,32 @@ const UserDetail = () => {
   }, [id]);
 
   const handleUpdate = async () => {
-
     if (!validateEmail(email)) {
       setErrorMessage('Invalid email format');
       return;
     }
 
-    if (!validatePassword(password)) {
-      setErrorMessage('Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, and one number');
-      return;
-    }
-
     const escapedUsername = escapeHtml(username);
     const escapedEmail = escapeHtml(email);
-    const escapedPassword = escapeHtml(password);
-  try {
-    const updatedUser = { username: escapedUsername, email: escapedEmail };
-    if (escapedPassword) {
-        updatedUser.password = escapedPassword;
-    }
 
-    const res = await axios.put(`http://localhost:5000/api/user/${id}`, updatedUser);
-    // Extract and display the detailed message from the response
-    if (res.data.success) {
-      alert(res.data.message || 'User updated successfully!');
-      navigate('/users');
-    } else {
-      setErrorMessage(res.data.message || 'Failed to update user');
+    try {
+      const updatedUser = { username: escapedUsername, email: escapedEmail, role };
+
+      const res = await axios.put(`http://localhost:5000/api/user/${id}`, updatedUser);
+      if (res.data.success) {
+        alert(res.data.message || 'User updated successfully!');
+        navigate('/users');
+      } else {
+        setErrorMessage(res.data.message || 'Failed to update user');
+      }
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.message) {
+        setErrorMessage(err.response.data.message);
+      } else {
+        setErrorMessage('Failed to update user');
+      }
     }
-  } catch (err) {
-    if (err.response && err.response.data && err.response.data.message) {
-      setErrorMessage(err.response.data.message);
-    } else {
-      setErrorMessage('Failed to update user');
-    }
-  }
-};
+  };
 
   const handleDelete = async () => {
     try {
@@ -118,8 +103,17 @@ const UserDetail = () => {
             <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           </FormGroup>
           <FormGroup>
-            <Label>Password:</Label>
-            <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <Label>Role:</Label>
+            <RoleContainer>
+              <RoleLabel>
+                <Input type="radio" value="user" checked={role === 'user'} onChange={(e) => setRole(e.target.value)} />
+                User
+              </RoleLabel>
+              <RoleLabel>
+                <Input type="radio" value="admin" checked={role === 'admin'} onChange={(e) => setRole(e.target.value)} />
+                Admin
+              </RoleLabel>
+            </RoleContainer>
           </FormGroup>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           <Button onClick={handleUpdate}>Update User</Button>
@@ -222,4 +216,15 @@ const StyledLink = styled(Link)`
   &:hover {
     text-decoration: underline;
   }
-`; 
+`;
+
+const RoleContainer = styled.div`
+  display: flex;
+  gap: 1rem;
+`;
+
+const RoleLabel = styled.label`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+`;

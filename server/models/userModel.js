@@ -55,7 +55,7 @@ const getUserById = async (id) => {
 // ------------ ALL USERS -------------------/
 const getAllUsers = async () => {
   try {
-    const query = 'SELECT id, username, email, is_locked, lock_until FROM users';
+    const query = 'SELECT * FROM users';
     const res = await pool.query(query);
     return res.rows;
   } catch (error) {
@@ -63,7 +63,6 @@ const getAllUsers = async () => {
     throw error;
   }
 };
-
 
 // ------------UPDATE USER BY ID -------------------/
  const updateUser = async (id, username, email, role = 'user') => {

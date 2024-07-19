@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import styled from 'styled-components';
 import PropTypes from 'prop-types'; 
-import { useAuth } from '../components/AuthContext';
+/* import { useAuth } from '../components/AuthContext'; */
 
 // Validation functions with regex
 const validateEmail = (email) => {
@@ -31,7 +31,7 @@ const escapeHTML = (str) => {
 };
 
 const Login = ({ setIsLoggedIn }) => {
-  const { login } = useAuth();
+/*   const { login } = useAuth(); */
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({
@@ -75,14 +75,14 @@ const Login = ({ setIsLoggedIn }) => {
         email: escapeHTML(email.trim()),
         password: escapeHTML(password.trim())
       });
-      const userData = res.data;
+   /*    const userData = res.data; */
 
       if (res.data.success) {
         const token = res.data.token;
         localStorage.setItem('token', token);
         console.log(token)
         localStorage.setItem('role', res.data.role);
-        login(userData);
+     /*    login(userData); */
         setIsLoggedIn(true);
         setErrors({ email: '', password: '', server: '' });
         alert('Connexion réussie');

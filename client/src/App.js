@@ -32,7 +32,7 @@ const App = () => {
 
         </Routes>
       </Router>
-    </AuthProvider>
+   </AuthProvider> 
   );
 }
 

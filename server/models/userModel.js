@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 
 // ------------ REGISTER -------------------/
-const createUser = async (username, email, password) => {
+const createUser = async (username, email, password, role = 'user') => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const id = uuidv4();
@@ -20,7 +20,7 @@ const createUser = async (username, email, password) => {
 };
 
 // ------------ ADD USER -------------------/
-const addUser = async (username, email, password, role) => {
+const addUser = async (username, email, password, role = 'user') => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const id = uuidv4();

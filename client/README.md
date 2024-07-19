@@ -5,5 +5,7 @@ npm install axios react-router-dom
 npm install styled-components
 npm install react-helmet
 npm install prop-types
+npm install jwt-decode
+
 
 `

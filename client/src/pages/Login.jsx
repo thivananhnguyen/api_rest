@@ -80,6 +80,7 @@ const Login = ({ setIsLoggedIn }) => {
       if (res.data.success) {
         const token = res.data.token;
         localStorage.setItem('token', token);
+        console.log(token)
         localStorage.setItem('role', res.data.role);
         login(userData);
         setIsLoggedIn(true);

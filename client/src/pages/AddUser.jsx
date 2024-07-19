@@ -91,7 +91,7 @@ const AddUser = () => {
 
       if (res.data.success) {
         alert(res.data.message);
-        navigate('/login');
+        navigate('/users');
       } else {
         setErrorMessage((prevErrors) => ({
           ...prevErrors,

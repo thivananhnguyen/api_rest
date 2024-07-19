@@ -3,7 +3,7 @@ const pool = require('../config/dbConfig');
 const emailRateLimiter = async (req, res, next) => {
   const { email } = req.body;
   const MAX_ATTEMPTS = 5;
-  const LOCK_TIME = 15 * 60 * 1000; // 15 minutes
+  const LOCK_TIME = 1 * 60 * 1000; // 15 minutes
 
   try {
     const client = await pool.connect();

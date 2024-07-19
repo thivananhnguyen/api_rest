@@ -8,13 +8,13 @@ const jwt = require('jsonwebtoken');
 const jwtSecret = process.env.JWT_SECRET;
 
 const getAllUsers = async (req, res) => {
-    try {
-        const users = await userModel.getAllUsers();
-        res.json(users);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Server Error');
-    }
+  try {
+    const users = await userModel.getAllUsers();
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server Error');
+  }
 };
 
 const getUserById = async (req, res) => {

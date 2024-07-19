@@ -2,11 +2,12 @@ const express = require('express');
 const userController = require('../controllers/userController');
 const authController = require('../controllers/AuthController');
 const {authenticateToken, authenticateTokenAdmin }= require('../middlewares/authenticateToken');
+const emailRateLimiter = require('../middlewares/emailRateLimiter');
 const router = express.Router();
 
 // Public routes
 router.post('/register', userController.createUser);
-router.post('/login', authController.login);
+router.post('/login', emailRateLimiter,  authController.login);
 
 // Admin protected routes
 router.get('/users', authenticateTokenAdmin, userController.getAllUsers);

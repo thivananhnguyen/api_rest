@@ -1,15 +1,15 @@
-// userModel.js
 const pool = require('../config/dbConfig');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 
+// ------------ REGISTER -------------------/
 const createUser = async (username, email, password) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const id = uuidv4();
     const query = {
       text: 'INSERT INTO users (id, username, email, password, role) VALUES ($1, $2, $3, $4, $5 ) RETURNING *',
-      values: [id, username, email, hashedPassword, 'user'],
+      values: [id, username, email, hashedPassword, role],
     };
     const res = await pool.query(query);
     return res.rows[0];
@@ -19,6 +19,7 @@ const createUser = async (username, email, password) => {
   }
 };
 
+// ------------ ADD USER -------------------/
 const addUser = async (username, email, password, role) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -35,7 +36,7 @@ const addUser = async (username, email, password, role) => {
   }
 };
 
-
+// ------------ USER BY ID-------------------/
 const getUserById = async (id) => {
   try {
     const query = {
@@ -50,9 +51,11 @@ const getUserById = async (id) => {
   }
 };
 
+
+// ------------ ALL USERS -------------------/
 const getAllUsers = async () => {
   try {
-    const query = 'SELECT * FROM users';
+    const query = 'SELECT id, username, email, is_locked, lock_until FROM users';
     const res = await pool.query(query);
     return res.rows;
   } catch (error) {
@@ -61,6 +64,8 @@ const getAllUsers = async () => {
   }
 };
 
+
+// ------------UPDATE USER BY ID -------------------/
 const updateUser = async (id, username, email, password) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -76,6 +81,7 @@ const updateUser = async (id, username, email, password) => {
   }
 };
 
+// ------------ DELETE USER BY ID -------------------/
 const deleteUser = async (id) => {
   try {
     const query = {
@@ -90,6 +96,7 @@ const deleteUser = async (id) => {
   }
 };
 
+// ------------ USER BY EMAIL -------------------/
 const getUserByEmail = async (email) => {
   try {
     const query = {

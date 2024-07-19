@@ -1,9 +1,9 @@
 import React, { useState }  from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './pages/Login';
-import Register from './pages/Register';
+import Register from './components/Register';
 import UserProfile from './pages/UserProfile';
-import UserList from './pages/UserList.jsx';
+import UserList from './pages/UserList';
 import AddUser from './pages/AddUser.jsx';
 import UpdateUserID from './pages/UpdateUserID';
 import Navbar from './components/Navbar';
@@ -29,7 +29,7 @@ const App = () => {
             <Route path="/add-user" element={<AddUser />} />
             <Route path="/user/:id" element={<UpdateUserID />} />
           </Route>
-          
+
         </Routes>
       </Router>
     </AuthProvider>

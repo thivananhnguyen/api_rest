@@ -53,8 +53,8 @@ const UserDetail = () => {
       return;
     }
 
-    const escapedUsername = escapeHtml(username);
-    const escapedEmail = escapeHtml(email);
+    const escapedUsername = escapeHtml(username.trim());
+    const escapedEmail = escapeHtml(email.trim());
 
     try {
       const updatedUser = { username: escapedUsername, email: escapedEmail, role };

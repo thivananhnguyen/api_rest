@@ -30,7 +30,7 @@ const AddUser = () => {
     username: '',
     email: '',
     password: '',
-    role: 'user' // Default role is user
+    role: 'user' 
   });
 
   const [errorMessage, setErrorMessage] = useState({
@@ -86,7 +86,7 @@ const AddUser = () => {
         username: escapedUsername,
         email: escapedEmail,
         password: escapedPassword,
-        role: role // Include role in the request body
+        role: role
       });
 
       if (res.data.success) {

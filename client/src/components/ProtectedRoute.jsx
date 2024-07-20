@@ -5,7 +5,6 @@ const ProtectedRoute = ({ requiredRole }) => {
   const token = localStorage.getItem('token');
   const userRole = localStorage.getItem('role');
 
-  // Check if user is authenticated and has the required role
   if (token && userRole === requiredRole) {
     return <Outlet />;
   }

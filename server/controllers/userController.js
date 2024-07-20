@@ -33,49 +33,6 @@ const getUserById = async (req, res) => {
 };
 
 /* ------------------ CREATE USER ----------------------*/
-/* const createUser = async (req, res) => {
-  const { username, email, password } = req.body;
-  
-  // Escape HTML characters
-  const escapedUsername = escapeHtml(username.trim());
-  const escapedEmail = escapeHtml(email.trim());
-
-  // Validate email format
-  if (!validateEmail(email)) {
-    return res.status(400).json({ message: 'Format de courriel invalide' });
-  }
-
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
-  try {
-    // Check if email already exists
-    const existingUser = await userModel.getUserByEmail(escapedEmail);
-    if (existingUser) {
-      return res.status(400).json({ message: 'Email déjà enregistré' });
-    }
-
-    //hash Password
-    const escapedPassword = await bcrypt.hash(password.trim(), 10);
-    // Add user to the database
-    const newUser = await userModel.createUser(escapedUsername, escapedEmail, escapedPassword);
-
-    return res.status(201).json({ success: true, message: 'Utilisateur enregistré avec succès', user: newUser });
-  } catch (error) {
-    console.error("Erreur lors de l'inscription:", error);
-    let errorMessage = "Erreur lors de l'inscription";
-    if (error.code === 'auth/email-already-exists') {
-      errorMessage = 'Email existe déjà. Veuillez choisir une autre adresse e-mail.';
-    } else if (error.code === 'auth/weak-password') {
-      errorMessage = 'Le mot de passe doit comporter au moins 8 caractères.';
-    }
-
-    res.status(500).send({ message: errorMessage });
-  }
-}; */
-
 // Tạo người dùng
 const createUser = async (req, res) => {
   const { username, email, password } = req.body;

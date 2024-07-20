@@ -50,6 +50,7 @@ const UsersList = () => {
               <TableHeader>Username</TableHeader>
               <TableHeader>Email</TableHeader>
               <TableHeader>Role</TableHeader>
+              <TableHeader>is_verified</TableHeader>
               <TableHeader>Locked</TableHeader>
               <TableHeader>Lock Until</TableHeader>
               <TableHeader>Action</TableHeader>
@@ -62,6 +63,7 @@ const UsersList = () => {
                 <TableCell><Link to={`/user/${user.id}`}>{user.username}</Link></TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.role}</TableCell>
+                <TableCell>{user.is_verified ?  'Yes' : 'No'}</TableCell>
                 <TableCell>{user.is_locked ? 'Yes' : 'No'}</TableCell>
                 <TableCell>{user.lock_until ? new Date(user.lock_until).toLocaleString() : 'N/A'}</TableCell>
                 <TableCell>

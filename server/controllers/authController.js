@@ -22,6 +22,10 @@ const login = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Cet email n\'est pas encore inscrit. Veuillez vous inscrire.' });
     }
 
+    if (!user.is_verified) {
+      return res.status(403).json({ message: 'Email not verified. Please check your email for verification.' });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ success: false, message: 'Mot de passe incorrect. Veuillez réessayer.' });

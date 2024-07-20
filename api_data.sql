@@ -28,7 +28,7 @@ CREATE TABLE login_attempts (
 );
 
 --deux etape creer table login-attempts
-CREATE TABLE login_attempts (
+/* CREATE TABLE login_attempts (
     email VARCHAR(100) NOT NULL,
     attempts INT DEFAULT 0,
     last_attempt TIMESTAMP NOT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE login_attempts (
     FOREIGN KEY (email) REFERENCES users(email)
 );
 ALTER TABLE login_attempts
-ADD COLUMN locked_until TIMESTAMP NULL;
+ADD COLUMN locked_until TIMESTAMP NULL; */
 
 
 ALTER TABLE users

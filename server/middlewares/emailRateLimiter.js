@@ -18,7 +18,7 @@ const emailRateLimiter = async (req, res, next) => {
     `, [email]);
 
     if (userResult.rows.length === 0) {
-      return res.status(401).json({ success: false, message: 'Email ou mot de passe invalide' });
+      return res.status(401).json({ success: false, message: 'Cet email n\'est pas encore inscrit. Veuillez vous inscrire.' });
     }
 
     const user = userResult.rows[0];

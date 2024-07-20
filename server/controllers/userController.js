@@ -4,6 +4,10 @@ const escapeHtml = require('../helpers/escapeHtml');
 const { validateEmail } = require('../helpers/validation');
 const bcrypt = require('bcryptjs');
 
+const jwt = require('jsonwebtoken');
+const { jwtSecret } = require('../config/mailerConfig');
+const sendEmail = require('../services/emailService');
+
 const getAllUsers = async (req, res) => {
   try {
     const users = await userModel.getAllUsers();
@@ -29,7 +33,7 @@ const getUserById = async (req, res) => {
 };
 
 /* ------------------ CREATE USER ----------------------*/
-const createUser = async (req, res) => {
+/* const createUser = async (req, res) => {
   const { username, email, password } = req.body;
   
   // Escape HTML characters
@@ -69,6 +73,54 @@ const createUser = async (req, res) => {
     }
 
     res.status(500).send({ message: errorMessage });
+  }
+}; */
+
+// Tạo người dùng
+const createUser = async (req, res) => {
+  const { username, email, password } = req.body;
+  
+  // Escape HTML characters
+  const escapedUsername = escapeHtml(username.trim());
+  const escapedEmail = escapeHtml(email.trim());
+
+  // Validate email format
+  if (!validateEmail(email)) {
+    return res.status(400).json({ message: 'Format de courriel invalide' });
+  }
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    // Check if email already exists
+    const existingUser = await userModel.getUserByEmail(escapedEmail);
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email déjà enregistré' });
+    }
+
+    // Hash password
+    const escapedPassword = await bcrypt.hash(password.trim(), 10);
+    
+    // Add user to the database
+    const newUser = await userModel.createUser(escapedUsername, escapedEmail, escapedPassword);
+
+    // Create a verification token
+    const token = jwt.sign({ email: escapedEmail }, jwtSecret, { expiresIn: '1h' });
+    const verificationUrl = `http://localhost:3000/verify-email?token=${token}`;
+
+    // Send verification email
+    await sendEmail(escapedEmail, 'Verify Your Email Address', `
+      <p>Thank you for registering. Please click the link below to verify your email address:</p>
+      <a href="${verificationUrl}">Verify Email</a>
+    `);
+
+    return res.status(201).json({ success: true, message: 'Utilisateur enregistré avec succès. Please check your email to verify your account.' });
+  } catch (error) {
+    console.error("Erreur lors de l'inscription:", error);
+    res.status(500).send({ message: 'Erreur lors de l\'inscription' });
   }
 };
 

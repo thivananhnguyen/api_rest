@@ -2,7 +2,7 @@ const pool = require('../config/dbConfig');
 const { v4: uuidv4 } = require('uuid');
 
 // ------------ REGISTER -------------------/
-const createUser = async (username, email, password, role = 'user') => {
+/* const createUser = async (username, email, password, role = 'user') => {
   try {
     const id = uuidv4();
     const query = {
@@ -15,12 +15,55 @@ const createUser = async (username, email, password, role = 'user') => {
     console.error('Error creating user:', error);
     throw error;
   }
+}; */
+const createUser = async (username, email, password, role = 'user') => {
+  try {
+    const id = uuidv4();
+    const query = {
+      text: 'INSERT INTO users (id, username, email, password, role, is_verified) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      values: [id, username, email, password, role, false], // Set default is_verified to false
+    };
+    const res = await pool.query(query);
+    return res.rows[0];
+  } catch (error) {
+    console.error('Error creating user:', error);
+    throw error;
+  }
 };
+
+// Cập nhật trạng thái xác thực email
+const verifyUserEmail = async (email) => {
+  try {
+    const query = {
+      text: 'UPDATE users SET is_verified = $1 WHERE email = $2',
+      values: [true, email],
+    };
+    await pool.query(query);
+  } catch (error) {
+    console.error('Error verifying email:', error);
+    throw error;
+  }
+};
+
+const updateUserVerification = async (email) => {
+  try {
+    const query = {
+      text: 'UPDATE users SET is_verified = TRUE WHERE email = $1 RETURNING *',
+      values: [email],
+    };
+    const res = await pool.query(query);
+    return res.rows[0];
+  } catch (error) {
+    console.error('Error updating user verification:', error);
+    throw error;
+  }
+};
+
 
 // ------------ ADD USER -------------------/
 const addUser = async (username, email, password, role = 'user') => {
   try {
-     const id = uuidv4();
+    const id = uuidv4();
     const query = {
       text: 'INSERT INTO users (id, username, email, password, role) VALUES ($1, $2, $3, $4, $5) RETURNING *',
       values: [id, username, email, password, role],
@@ -108,6 +151,8 @@ const getUserByEmail = async (email) => {
 
 module.exports = {
   createUser,
+  verifyUserEmail,
+  updateUserVerification,
   addUser,
   getUserById,
   getAllUsers,

@@ -10,6 +10,7 @@ import Navbar from './components/Navbar';
 import './axiosConfig';
 import { AuthProvider } from '././components/AuthContext';
 import ProtectedRoute from '././components/ProtectedRoute';
+import VerifyEmail from './components/VerifyEmail..jsx'; 
 
 const App = () => {
 
@@ -23,6 +24,7 @@ const App = () => {
           <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/register" element={<Register />} />
           <Route path="/me" element={<UserProfile />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
 
           <Route element={<ProtectedRoute requiredRole="admin" />}>
             <Route path="/users" element={<UserList />} />

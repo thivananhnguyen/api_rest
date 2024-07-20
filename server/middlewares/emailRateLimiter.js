@@ -27,7 +27,7 @@ const emailRateLimiter = async (req, res, next) => {
       const timeRemaining = user.lock_until - now;
       return res.status(429).json({
         success: false,
-        message: `Votre compte est verrouillé. Veuillez réessayer après ${Math.ceil(timeRemaining / 1000 / 60)} minutes.`
+        message: `Votre compte est trop tentative. Veuillez réessayer après ${Math.ceil(timeRemaining / 1000 / 60)} minutes.`
       });
     }
 

@@ -6,6 +6,8 @@ const path = require('path');
 const userRoutes = require('./routes/userRoutes');
 require('dotenv').config();
 
+const authRoutes = require('./routes/auth'); 
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -28,6 +30,7 @@ app.use(express.static(path.join(__dirname, '../client/build')));
 
 // API routes
 app.use('/api', userRoutes);
+app.use('/api/auth', authRoutes); 
 
 // Serve the React app in production
 if (process.env.NODE_ENV === 'production') {

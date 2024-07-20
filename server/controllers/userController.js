@@ -1,4 +1,4 @@
-const { check, validationResult } = require('express-validator');
+const { /* check, */ validationResult } = require('express-validator');
 const userModel = require('../models/userModel');
 const escapeHtml = require('../helpers/escapeHtml');
 const { validateEmail, validatePassword } = require('../helpers/validation');
@@ -32,72 +32,63 @@ const getUserById = async (req, res) => {
 };
 
 /* ------------------ CREATE USER ----------------------*/
-  const createUser = async (req, res) => {
-    await check('username', 'Username is required').notEmpty().run(req);
-    await check('email', 'Valid email is required').isEmail().run(req);
-    await check('password', 'Password is required')
-      .notEmpty()
-      .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
-      .custom((value) => validatePassword(value))
-      .withMessage('Password must contain at least one digit, one uppercase letter, and one lowercase letter');
-    await check('confirmPassword', 'Passwords do not match').custom((value, { req }) => value === req.body.password).run(req);
+const createUser = async (req, res) => {
+  const { username, email, password/* , confirmPassword */ } = req.body;
   
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-  
-    const { username, email, password } = req.body;
-     
-    try {
-        
-        if (!validateEmail(email)) {
-            return res.status(400).json({ message: 'Invalid email format' });
-            }
+  // Escape HTML characters
+  const escapedUsername = escapeHtml(username);
+  const escapedEmail = escapeHtml(email);
+  const escapedPassword = escapeHtml(password);
 
-      // Check if email already exists
-      const existingUser = await userModel.getUserByEmail(email);
-        if (existingUser) {
-            return res.status(400).json({ message: 'Email is already registered' });
-        }
-  
-      // Escape HTML characters
-      const escapedUsername = escapeHtml(username.trim());
-      const escapedEmail = escapeHtml(email.trim());
-      const escapedPassword = await bcrypt.hash(password.trim(), 10);
-  
-      // Add user to database
-      const newUser = await userModel.createUser(escapedUsername, escapedEmail, escapedPassword);
-      return res.status(201).json({ success: true, message: 'Utilisateur enregistré avec succès', user: newUser });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Server Error');
+  // Validate email format
+  if (!validateEmail(email)) {
+    return res.status(400).json({ message: 'Format de courriel invalide' });
+  }
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    // Check if email already exists
+    const existingUser = await userModel.getUserByEmail(escapedEmail);
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email déjà enregistré' });
     }
-  };
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(escapedPassword, 10);
+
+    // Add user to the database
+    const newUser = await userModel.createUser(escapedUsername, escapedEmail, hashedPassword);
+
+    return res.status(201).json({ success: true, message: 'Utilisateur enregistré avec succès', user: newUser });
+  } catch (error) {
+    console.error("Erreur lors de l'inscription:", error);
+    let errorMessage = "Erreur lors de l'inscription";
+    if (error.code === 'auth/email-already-exists') {
+      errorMessage = 'Email existe déjà. Veuillez choisir une autre adresse e-mail.';
+    } else if (error.code === 'auth/weak-password') {
+      errorMessage = 'Le mot de passe doit comporter au moins 8 caractères.';
+    }
+
+    res.status(500).send({ message: errorMessage });
+  }
+};
+
 
 /* ------------------ ADD USER ----------------------*/
 const addUser = async (req, res) => {
-    await check('username', 'Username is required').notEmpty().run(req);
-    await check('email', 'Valid email is required').isEmail().run(req);
-    await check('password', 'Password is required')
-      .notEmpty()
-      .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
-      .custom((value) => validatePassword(value))
-      .withMessage('Password must contain at least one digit, one uppercase letter, and one lowercase letter');
-  
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
   
-    const { username, email, password, role } = req.body;
+    const { username, email, password,  role = 'user' } = req.body;
      
     try {
-        
-        if (!validateEmail(email)) {
-            return res.status(400).json({ message: 'Invalid email format' });
-            }
-
       // Check if email already exists
       const existingUser = await userModel.getUserByEmail(email);
         if (existingUser) {
@@ -120,12 +111,6 @@ const addUser = async (req, res) => {
 
 /* ------------------ UPDATE USER ----------------------*/
 const updateUser = async (req, res) => {
-  // Validate inputs
-  await check('username', 'Username is required').notEmpty().run(req);
-  await check('email', 'Valid email is required').isEmail().run(req);
-  await check('role', 'Role is required').isIn(['user', 'admin']).run(req);
-
-
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });

@@ -50,6 +50,8 @@ const UsersList = () => {
               <TableHeader>Username</TableHeader>
               <TableHeader>Email</TableHeader>
               <TableHeader>Role</TableHeader>
+              <TableHeader>Locked</TableHeader>
+              <TableHeader>Lock Until</TableHeader>
               <TableHeader>Action</TableHeader>
             </TableRow>
           </TableHead>
@@ -60,6 +62,8 @@ const UsersList = () => {
                 <TableCell><Link to={`/user/${user.id}`}>{user.username}</Link></TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.role}</TableCell>
+                <TableCell>{user.is_locked ? 'Yes' : 'No'}</TableCell>
+                <TableCell>{user.lock_until ? new Date(user.lock_until).toLocaleString() : 'N/A'}</TableCell>
                 <TableCell>
                   <Button onClick={() => navigate(`/user/${user.id}`)}>Update</Button>
                   <Button onClick={() => handleDeleteUser(user.id)}>Delete</Button>

@@ -12,24 +12,34 @@ const emailRateLimiter = async (req, res, next) => {
     const now = new Date();
 
     const userResult = await client.query(`
-      SELECT id, username, email, password, role
+      SELECT id, username, email, password, role, is_locked, lock_until
       FROM users
       WHERE email = $1
     `, [email]);
-
-    /* console.log('Résultat utilisateur:', userResult.rows); */
 
     if (userResult.rows.length === 0) {
       return res.status(401).json({ success: false, message: 'Email ou mot de passe invalide' });
     }
 
     const user = userResult.rows[0];
-    const isMatch = await bcrypt.compare(password, user.password);
 
-    /* console.log('Correspondance du mot de passe:', isMatch); */
+    if (user.is_locked && user.lock_until > now) {
+      const timeRemaining = user.lock_until - now;
+      return res.status(429).json({
+        success: false,
+        message: `Votre compte est verrouillé. Veuillez réessayer après ${Math.ceil(timeRemaining / 1000 / 60)} minutes.`
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
 
     if (isMatch) {
       await client.query('DELETE FROM login_attempts WHERE email = $1', [email]);
+
+      if (user.is_locked) {
+        await client.query('UPDATE users SET is_locked = FALSE, lock_until = NULL WHERE email = $1', [email]);
+      }
+
       return next();
     } else {
       if (user.role !== 'admin') {
@@ -38,8 +48,6 @@ const emailRateLimiter = async (req, res, next) => {
           FROM login_attempts
           WHERE email = $1
         `, [email]);
-
-        /* console.log('Résultat tentative de connexion:', loginAttemptResult.rows); */
 
         const timeNow = new Date();
 
@@ -57,6 +65,9 @@ const emailRateLimiter = async (req, res, next) => {
           if (loginAttempt.attempts >= MAX_ATTEMPTS && now - loginAttempt.last_attempt < LOCK_TIME) {
             const lockUntil = new Date(now.getTime() + LOCK_TIME);
             await client.query('UPDATE login_attempts SET attempts = attempts + 1, last_attempt = $1, locked_until = $2 WHERE email = $3', [now, lockUntil, email]);
+
+            await client.query('UPDATE users SET is_locked = TRUE, lock_until = $1 WHERE email = $2', [lockUntil, email]);
+
             return res.status(429).json({
               success: false,
               message: `Votre compte est verrouillé. Veuillez réessayer après ${Math.ceil(LOCK_TIME / 1000 / 60)} minutes.`

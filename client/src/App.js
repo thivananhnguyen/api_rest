@@ -1,16 +1,17 @@
 import React, { useState }  from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import './axiosConfig';
+import { AuthProvider } from '././components/AuthContext';
+import ProtectedRoute from '././components/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './components/Register';
+import VerifyEmail from './components/VerifyEmail..jsx'; 
 import UserProfile from './pages/UserProfile';
 import UserList from './pages/UserList';
 import AddUser from './pages/AddUser.jsx';
 import UpdateUserID from './pages/UpdateUserID';
 import Navbar from './components/Navbar';
-import './axiosConfig';
-import { AuthProvider } from '././components/AuthContext';
-import ProtectedRoute from '././components/ProtectedRoute';
-import VerifyEmail from './components/VerifyEmail..jsx'; 
+
 
 const App = () => {
 

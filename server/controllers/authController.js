@@ -70,17 +70,17 @@ const verifyEmail = async (req, res) => {
   const { token } = req.body;
 
   try {
-    // Giải mã token để lấy email
+    //decode token to email
     const decoded = jwt.verify(token, jwtSecret);
     const email = decoded.email;
 
-    // Cập nhật trạng thái is_verified của người dùng
+    // update is_verified of user
     const user = await userModel.updateUserVerification(email);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Chuyển hướng người dùng đến trang login
+    // Redirect to login
     res.status(200).json({ success: true, message: 'Email successfully verified' });
   } catch (error) {
     console.error('Error verifying email:', error);

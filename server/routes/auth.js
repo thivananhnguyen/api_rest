@@ -7,7 +7,7 @@ const authController = require('../controllers/authController');
 
 const router = express.Router();
 
-// Route gửi liên kết xác thực email
+//Route sends email validation links
 router.post('/send-verification-link', async (req, res) => {
   const { email } = req.body;
 
@@ -31,7 +31,7 @@ router.post('/send-verification-link', async (req, res) => {
   }
 });
 
-// Route xác thực email
+// Route Email Authentication
 router.post('/verify-email', authController.verifyEmail);
 
 module.exports = router;

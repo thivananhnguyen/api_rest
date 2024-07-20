@@ -27,17 +27,6 @@ CREATE TABLE login_attempts (
     FOREIGN KEY (email) REFERENCES users(email)
 );
 
---deux etape creer table login-attempts
-/* CREATE TABLE login_attempts (
-    email VARCHAR(100) NOT NULL,
-    attempts INT DEFAULT 0,
-    last_attempt TIMESTAMP NOT NULL,
-    PRIMARY KEY (email),
-    FOREIGN KEY (email) REFERENCES users(email)
-);
-ALTER TABLE login_attempts
-ADD COLUMN locked_until TIMESTAMP NULL; */
-
 
 ALTER TABLE users
 ADD COLUMN is_locked BOOLEAN DEFAULT FALSE,

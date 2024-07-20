@@ -2,20 +2,6 @@ const pool = require('../config/dbConfig');
 const { v4: uuidv4 } = require('uuid');
 
 // ------------ REGISTER -------------------/
-/* const createUser = async (username, email, password, role = 'user') => {
-  try {
-    const id = uuidv4();
-    const query = {
-      text: 'INSERT INTO users (id, username, email, password, role) VALUES ($1, $2, $3, $4, $5 ) RETURNING *',
-      values: [id, username, email, password, role],
-    };
-    const res = await pool.query(query);
-    return res.rows[0];
-  } catch (error) {
-    console.error('Error creating user:', error);
-    throw error;
-  }
-}; */
 const createUser = async (username, email, password, role = 'user') => {
   try {
     const id = uuidv4();
@@ -31,7 +17,7 @@ const createUser = async (username, email, password, role = 'user') => {
   }
 };
 
-// Cập nhật trạng thái xác thực email
+// --------------- verifyUserEmail -------------------/ 
 const verifyUserEmail = async (email) => {
   try {
     const query = {
@@ -45,6 +31,7 @@ const verifyUserEmail = async (email) => {
   }
 };
 
+//------------ updateUserVerification -------------------/
 const updateUserVerification = async (email) => {
   try {
     const query = {
@@ -61,12 +48,12 @@ const updateUserVerification = async (email) => {
 
 
 // ------------ ADD USER -------------------/
-const addUser = async (username, email, password, role = 'user') => {
+const addUser = async (username, email, password, role = 'user', isVerified = false) => {
   try {
     const id = uuidv4();
     const query = {
-      text: 'INSERT INTO users (id, username, email, password, role) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      values: [id, username, email, password, role],
+      text: 'INSERT INTO users (id, username, email, password, role, is_verified ) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      values: [id, username, email, password, role, isVerified ],
     };
     const res = await pool.query(query);
     return res.rows[0];

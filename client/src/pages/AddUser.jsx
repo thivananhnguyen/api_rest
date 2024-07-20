@@ -30,7 +30,8 @@ const AddUser = () => {
     username: '',
     email: '',
     password: '',
-    role: 'user' 
+    role: 'user' ,
+    is_verified: true
   });
 
   const [errorMessage, setErrorMessage] = useState({
@@ -86,7 +87,8 @@ const AddUser = () => {
         username: escapedUsername,
         email: escapedEmail,
         password: escapedPassword,
-        role: role
+        role: role,
+        is_verified: formData.is_verified
       });
 
       if (res.data.success) {

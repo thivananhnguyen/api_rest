@@ -33,7 +33,6 @@ const getUserById = async (req, res) => {
 };
 
 /* ------------------ CREATE USER ----------------------*/
-// Tạo người dùng
 const createUser = async (req, res) => {
   const { username, email, password } = req.body;
   
@@ -90,7 +89,7 @@ const addUser = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
   
-    const { username, email, password,  role = 'user' } = req.body;
+    const { username, email, password,  role = 'user', is_verified } = req.body;
      
     try {
       // Check if email already exists
@@ -105,7 +104,7 @@ const addUser = async (req, res) => {
       const escapedPassword = await bcrypt.hash(password.trim(), 10);
   
       // Add user to database
-      const newUser = await userModel.addUser(escapedUsername, escapedEmail, escapedPassword, role);
+      const newUser = await userModel.addUser(escapedUsername, escapedEmail, escapedPassword, role, is_verified);
       return res.status(201).json({ success: true, message: 'Utilisateur ajouter avec succès', user: newUser });
     } catch (error) {
       console.error(error);

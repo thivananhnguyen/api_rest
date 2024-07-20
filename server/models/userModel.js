@@ -1,15 +1,13 @@
 const pool = require('../config/dbConfig');
-const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 
 // ------------ REGISTER -------------------/
 const createUser = async (username, email, password, role = 'user') => {
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
     const id = uuidv4();
     const query = {
       text: 'INSERT INTO users (id, username, email, password, role) VALUES ($1, $2, $3, $4, $5 ) RETURNING *',
-      values: [id, username, email, hashedPassword, role],
+      values: [id, username, email, password, role],
     };
     const res = await pool.query(query);
     return res.rows[0];
@@ -22,11 +20,10 @@ const createUser = async (username, email, password, role = 'user') => {
 // ------------ ADD USER -------------------/
 const addUser = async (username, email, password, role = 'user') => {
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const id = uuidv4();
+     const id = uuidv4();
     const query = {
       text: 'INSERT INTO users (id, username, email, password, role) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      values: [id, username, email, hashedPassword, role],
+      values: [id, username, email, password, role],
     };
     const res = await pool.query(query);
     return res.rows[0];

@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
 const userModel = require('../models/userModel');
 const escapeHtml = require('../helpers/escapeHtml');
-const { validateEmail, validatePassword } = require('../helpers/validation');
+const { validateEmail } = require('../helpers/validation');
 const bcrypt = require('bcryptjs');
 
 const getAllUsers = async (req, res) => {
@@ -35,7 +35,6 @@ const createUser = async (req, res) => {
   // Escape HTML characters
   const escapedUsername = escapeHtml(username.trim());
   const escapedEmail = escapeHtml(email.trim());
-  const escapedPassword = password.trim();
 
   // Validate email format
   if (!validateEmail(email)) {
@@ -54,6 +53,8 @@ const createUser = async (req, res) => {
       return res.status(400).json({ message: 'Email déjà enregistré' });
     }
 
+    //hash Password
+    const escapedPassword = await bcrypt.hash(password.trim(), 10);
     // Add user to the database
     const newUser = await userModel.createUser(escapedUsername, escapedEmail, escapedPassword);
 
@@ -92,7 +93,7 @@ const addUser = async (req, res) => {
       // Escape HTML characters
       const escapedUsername = escapeHtml(username.trim());
       const escapedEmail = escapeHtml(email.trim());
-      const escapedPassword = password.trim();
+      const escapedPassword = await bcrypt.hash(password.trim(), 10);
   
       // Add user to database
       const newUser = await userModel.addUser(escapedUsername, escapedEmail, escapedPassword, role);

@@ -1,11 +1,8 @@
-const { /* check, */ validationResult } = require('express-validator');
+const { validationResult } = require('express-validator');
 const userModel = require('../models/userModel');
 const escapeHtml = require('../helpers/escapeHtml');
 const { validateEmail, validatePassword } = require('../helpers/validation');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-
-const jwtSecret = process.env.JWT_SECRET;
 
 const getAllUsers = async (req, res) => {
   try {
@@ -33,12 +30,12 @@ const getUserById = async (req, res) => {
 
 /* ------------------ CREATE USER ----------------------*/
 const createUser = async (req, res) => {
-  const { username, email, password/* , confirmPassword */ } = req.body;
+  const { username, email, password } = req.body;
   
   // Escape HTML characters
-  const escapedUsername = escapeHtml(username);
-  const escapedEmail = escapeHtml(email);
-  const escapedPassword = escapeHtml(password);
+  const escapedUsername = escapeHtml(username.trim());
+  const escapedEmail = escapeHtml(email.trim());
+  const escapedPassword = password.trim();
 
   // Validate email format
   if (!validateEmail(email)) {
@@ -57,11 +54,8 @@ const createUser = async (req, res) => {
       return res.status(400).json({ message: 'Email déjà enregistré' });
     }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(escapedPassword, 10);
-
     // Add user to the database
-    const newUser = await userModel.createUser(escapedUsername, escapedEmail, hashedPassword);
+    const newUser = await userModel.createUser(escapedUsername, escapedEmail, escapedPassword);
 
     return res.status(201).json({ success: true, message: 'Utilisateur enregistré avec succès', user: newUser });
   } catch (error) {
@@ -98,7 +92,7 @@ const addUser = async (req, res) => {
       // Escape HTML characters
       const escapedUsername = escapeHtml(username.trim());
       const escapedEmail = escapeHtml(email.trim());
-      const escapedPassword = await bcrypt.hash(password.trim(), 10);
+      const escapedPassword = password.trim();
   
       // Add user to database
       const newUser = await userModel.addUser(escapedUsername, escapedEmail, escapedPassword, role);

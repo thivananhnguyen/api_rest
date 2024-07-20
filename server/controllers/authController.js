@@ -7,12 +7,13 @@ const pool  = require('../config/dbConfig');
 const jwtSecret = process.env.JWT_SECRET;
 
 const login = async (req, res) => {
+
+  const { email, password } = req.body;
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-
-  const { email, password } = req.body;
 
   try {
     const user = await userModel.getUserByEmail(email);
@@ -25,7 +26,6 @@ const login = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ success: false, message: 'Mot de passe incorrect. Veuillez réessayer.' });
     }
-
 
     const client = await pool.connect();
     await client.query('DELETE FROM login_attempts WHERE email = $1', [email]);

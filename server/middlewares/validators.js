@@ -1,6 +1,6 @@
 const { check } = require('express-validator');
 
-// Middleware để xác thực dữ liệu đầu vào cho đăng ký người dùng
+// Middleware create USER
 const createUserValidator = [
   check('username', 'Username is required').notEmpty(),
   check('email', 'A valid email is required').isEmail(),
@@ -12,7 +12,7 @@ const createUserValidator = [
   check('confirmPassword', 'Passwords do not match').custom((value, { req }) => value === req.body.password)
 ];
 
-// Middleware để xác thực dữ liệu đầu vào cho đăng nhập
+// Middleware VERIFIER LOGIN
 const loginValidator = [
   check('email', 'A valid email is required').isEmail(),
   check('password', 'Password is required')
@@ -22,7 +22,7 @@ const loginValidator = [
   .withMessage('Password must contain at least one digit, one uppercase letter, and one lowercase letter'),
 ];
 
-// Middleware để xác thực dữ liệu đầu vào cho việc thêm người dùng
+// Middleware ADD USERS
 const addUserValidator = [
     check('username', 'Username is required').notEmpty(),
     check('email', 'Valid email is required').isEmail(),
@@ -33,7 +33,7 @@ const addUserValidator = [
       .withMessage('Password must contain at least one digit, one uppercase letter, and one lowercase letter')
   ];
   
-  // Middleware để xác thực dữ liệu đầu vào cho việc cập nhật người dùng
+// Middleware UPDATE USER
 const updateUserValidator = [
     check('username', 'Username is required').notEmpty(),
     check('email', 'Valid email is required').isEmail(),

@@ -53,6 +53,13 @@ Pour valider les types de props passées aux composants React :
 npm install prop-types
 ```
 
+### npm  reCAPTCHA:
+
+
+```bash
+npm install react-google-recaptcha
+```
+
 ## Démarrage de l'Application
 
 Pour démarrer l'application, utilisez la commande suivante :

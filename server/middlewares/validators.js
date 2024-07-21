@@ -16,10 +16,11 @@ const createUserValidator = [
 const loginValidator = [
   check('email', 'A valid email is required').isEmail(),
   check('password', 'Password is required')
-  .notEmpty()
-  .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
-  .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/)
-  .withMessage('Password must contain at least one digit, one uppercase letter, and one lowercase letter'),
+    .notEmpty()
+    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
+    .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/)
+    .withMessage('Password must contain at least one digit, one uppercase letter, and one lowercase letter'),
+  check('recaptchaToken', 'reCAPTCHA token is required').notEmpty()
 ];
 
 // Middleware ADD USERS

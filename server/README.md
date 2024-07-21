@@ -76,6 +76,8 @@ Pour configurer l'envoi d'e-mails :
 
 ```bash
 npm install nodemailer
+npm install axios
+
 ```
 
 ## Configuration

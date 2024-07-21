@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import styled from 'styled-components';
 import PropTypes from 'prop-types'; 
+import ReCAPTCHA from 'react-google-recaptcha'; // Import ReCAPTCHA component
 
 // Validation functions with regex
 const validateEmail = (email) => {
@@ -32,6 +33,7 @@ const escapeHTML = (str) => {
 const Login = ({ setIsLoggedIn }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [recaptchaValue, setRecaptchaValue] = useState(null); // State for reCAPTCHA token
   const [errors, setErrors] = useState({
     email: '',
     password: '',
@@ -43,6 +45,11 @@ const Login = ({ setIsLoggedIn }) => {
     const { name, value } = e.target;
     if (name === 'email') setEmail(value);
     if (name === 'password') setPassword(value);
+  };
+
+  const handleRecaptchaChange = (value) => {
+    console.log('reCAPTCHA token:', value); // Log reCAPTCHA token
+    setRecaptchaValue(value); // Update reCAPTCHA token
   };
 
   const handleSubmit = async (e) => {
@@ -67,17 +74,18 @@ const Login = ({ setIsLoggedIn }) => {
       }));
       return;
     }
-
+    console.log('Submitting login form:', { email, password, recaptchaValue});
     try {
       const res = await axios.post('http://localhost:5000/api/login', {
         email: escapeHTML(email.trim()),
-        password: escapeHTML(password.trim())
+        password: escapeHTML(password.trim()),
+        recaptchaToken: recaptchaValue // Send reCAPTCHA token
       });
 
       if (res.data.success) {
         const token = res.data.token;
         localStorage.setItem('token', token);
-        console.log(token)
+        console.log(token);
         localStorage.setItem('role', res.data.role);
         setIsLoggedIn(true);
         setErrors({ email: '', password: '', server: '' });
@@ -127,6 +135,10 @@ const Login = ({ setIsLoggedIn }) => {
         />
         {errors.password && <ErrorMessage>{errors.password}</ErrorMessage>}
         {errors.server && <ErrorMessage>{errors.server}</ErrorMessage>}
+        <ReCAPTCHA
+          sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
+          onChange={handleRecaptchaChange}
+        />
         <Button type="submit">Se connecter</Button>
         <StyledLink to="/register">Pas de compte? Inscrivez-vous</StyledLink>
       </LoginForm>
@@ -172,6 +184,7 @@ const InputLabel = styled.label`
 const Input = styled.input`
   width: 100%;
   padding: 10px;
+  margin-bottom: .75em;
   font-size: 1.25rem;
   line-height: 24px;
   color: rgba(0, 0, 0, 0.21);
@@ -223,4 +236,3 @@ const StyledLink = styled(Link)`
 `;
 
 export default Login;
-

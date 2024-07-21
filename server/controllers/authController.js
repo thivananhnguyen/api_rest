@@ -2,13 +2,14 @@ const { validationResult } = require('express-validator');
 const userModel = require('../models/userModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const pool  = require('../config/dbConfig');
+const axios = require('axios'); // Import axios for HTTP requests
+const pool = require('../config/dbConfig');
 
 const jwtSecret = process.env.JWT_SECRET;
+const recaptchaSecretKey = process.env.RECAPTCHA_SECRET_KEY;
 
 const login = async (req, res) => {
-
-  const { email, password } = req.body;
+  const { email, password, recaptchaToken } = req.body; // Get recaptchaToken from request body
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -16,8 +17,19 @@ const login = async (req, res) => {
   }
 
   try {
+    // Verify reCAPTCHA
+    const recaptchaResponse = await axios.post('https://www.google.com/recaptcha/api/siteverify', null, {
+      params: {
+        secret: recaptchaSecretKey,
+        response: recaptchaToken,
+      },
+    });
+
+    if (!recaptchaResponse.data.success) {
+      return res.status(400).json({ success: false, message: 'reCAPTCHA verification failed' });
+    }
+
     const user = await userModel.getUserByEmail(email);
-    const role= user.role
     if (!user) {
       return res.status(400).json({ success: false, message: 'Cet email n\'est pas encore inscrit. Veuillez vous inscrire.' });
     }
@@ -39,18 +51,20 @@ const login = async (req, res) => {
       user: {
         id: user.id,
         username: user.username,
-        email: user.email
-      }
+        email: user.email,
+      },
     };
+
     jwt.sign(payload, jwtSecret, { expiresIn: '1h' }, (err, token) => {
       if (err) throw err;
-      res.json({ success: true, message: 'Connexion réussie', token, role: role });
+      res.json({ success: true, message: 'Connexion réussie', token, role: user.role });
     });
   } catch (error) {
-    console.error("Erreur lors de la connexion:", error);
+    console.error('Erreur lors de la connexion:', error);
     res.status(500).json({ success: false, message: 'Erreur lors de la connexion' });
   }
 };
+
 
 // --------getMe ---------------/
 const getMe = async (req, res) => {
@@ -66,6 +80,7 @@ const getMe = async (req, res) => {
     }
 };
 
+// --------  verifyEmail    ---------------/
 const verifyEmail = async (req, res) => {
   const { token } = req.body;
 

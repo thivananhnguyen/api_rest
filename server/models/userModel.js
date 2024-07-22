@@ -17,19 +17,6 @@ const createUser = async (username, email, password, role = 'user') => {
   }
 };
 
-// --------------- verifyUserEmail -------------------/ 
-const verifyUserEmail = async (email) => {
-  try {
-    const query = {
-      text: 'UPDATE users SET is_verified = $1 WHERE email = $2',
-      values: [true, email],
-    };
-    await pool.query(query);
-  } catch (error) {
-    console.error('Error verifying email:', error);
-    throw error;
-  }
-};
 
 //------------ updateUserVerification -------------------/
 const updateUserVerification = async (email) => {
@@ -138,7 +125,7 @@ const getUserByEmail = async (email) => {
 
 module.exports = {
   createUser,
-  verifyUserEmail,
+/*   verifyUserEmail, */
   updateUserVerification,
   addUser,
   getUserById,

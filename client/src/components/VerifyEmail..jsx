@@ -17,7 +17,7 @@ const VerifyEmail = () => {
       }
 
       try {
-        const response = await axios.post('http://localhost:5000/api/auth/verify-email', { token });
+        const response = await axios.post('http://localhost:5000/api/verify-email', { token });
         setMessage(response.data.message);
         if (response.data.success) {
           // Redirect to login page after successful verification

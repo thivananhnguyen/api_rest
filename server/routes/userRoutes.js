@@ -8,6 +8,7 @@ const router = express.Router();
 
 // Public routes
 router.post('/register', createUserValidator, userController.createUser);
+router.post('/verify-email', authController.verifyEmail); // Route Email Authentication
 router.post('/login',  loginValidator, emailRateLimiter,  authController.login);
 
 // Admin protected routes

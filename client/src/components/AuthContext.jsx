@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const token = localStorage.getItem('token');
         if (token) {
-          const response = await axios.get('/api/auth/me');
+          const response = await axios.get('/api/');
           setUser(response.data.user);
         }
       } catch (error) {

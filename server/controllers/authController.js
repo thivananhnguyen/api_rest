@@ -34,15 +34,18 @@ const login = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Cet email n\'est pas encore inscrit. Veuillez vous inscrire.' });
     }
 
+    //Users have validated Mailtrap
     if (!user.is_verified) {
       return res.status(403).json({ message: 'Email not verified. Please check your email for verification.' });
     }
 
+    //Password Comparison
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ success: false, message: 'Mot de passe incorrect. Veuillez réessayer.' });
     }
 
+    //Email rate-limited
     const client = await pool.connect();
     await client.query('DELETE FROM login_attempts WHERE email = $1', [email]);
     client.release();

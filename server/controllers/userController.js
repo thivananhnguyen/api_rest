@@ -101,6 +101,8 @@ const addUser = async (req, res) => {
       // Escape HTML characters
       const escapedUsername = escapeHtml(username.trim());
       const escapedEmail = escapeHtml(email.trim());
+      
+      // Hash password
       const escapedPassword = await bcrypt.hash(password.trim(), 10);
   
       // Add user to database

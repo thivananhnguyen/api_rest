@@ -68,6 +68,7 @@ const UserDetail = () => {
       }
     } catch (err) {
       if (err.response && err.response.data && err.response.data.message) {
+        alert(err.response.data.message)
         setErrorMessage(err.response.data.message);
       } else {
         setErrorMessage('Failed to update user');

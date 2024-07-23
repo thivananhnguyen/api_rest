@@ -25,7 +25,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
 
   return (
     <NavbarContainer>
-      <NavbarTitle>Admin Dashboard</NavbarTitle>
+      <NavbarTitle>Dashboard</NavbarTitle>
       <NavbarLinkContainer>
         {isLoggedIn && role === 'admin' && (
           <NavbarLink to="/users">Manage Users</NavbarLink>

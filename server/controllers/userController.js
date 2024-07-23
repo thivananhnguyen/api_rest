@@ -3,7 +3,6 @@ const userModel = require('../models/userModel');
 const escapeHtml = require('../helpers/escapeHtml');
 const { validateEmail } = require('../helpers/validation');
 const bcrypt = require('bcryptjs');
-
 const jwt = require('jsonwebtoken');
 const { jwtSecret } = require('../config/mailerConfig');
 const sendEmail = require('../services/emailService');
@@ -118,34 +117,35 @@ const addUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+    return res.status(400).json({ errors: errors.array() });
   }
 
   const { id } = req.params;
-  const { username, email, role } = req.body;
+  const { username, email} = req.body;
 
   // Escape and trim inputs
   const escapedUsername = escapeHtml(username.trim());
   const escapedEmail = escapeHtml(email.trim());
 
   try {
-      // Check if email already exists
-      const existingUser = await userModel.getUserByEmail(escapedEmail);
-      if (existingUser && existingUser.id !== id) {
-          return res.status(400).json({ message: 'Email already exists' });
-      }
+    // Check if email already exists
+    const existingUser = await userModel.getUserByEmail(escapedEmail);
+    if (existingUser && existingUser.id !== id) {
+      return res.status(400).json({ message: 'Email already exists' });
+    }
 
-      const updatedUser = await userModel.updateUser(id, escapedUsername, escapedEmail, role);
+    const updatedUser = await userModel.updateUser(id, escapedUsername, escapedEmail);
 
-      if (!updatedUser) {
-          return res.status(404).json({ message: 'User not found' });
-      }
-      res.status(201).json({ success: true, message: 'User updated successfully!', user: updatedUser }); 
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json({ success: true, message: 'User updated successfully!', user: updatedUser });
   } catch (error) {
-      console.error(error);
-      res.status(500).send('Server Error');
+    console.error(error);
+    res.status(500).send('Server Error');
   }
 };
+
 
 /* ------------------ DELETE USER ----------------------*/
 const deleteUser = async (req, res) => {

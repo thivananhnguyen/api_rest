@@ -28,7 +28,6 @@ const UserDetail = () => {
   const [user, setUser] = useState({});
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState('user'); // Default role
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
@@ -38,7 +37,6 @@ const UserDetail = () => {
         setUser(response.data);
         setUsername(response.data.username);
         setEmail(response.data.email);
-        setRole(response.data.role || 'user'); // Set default role if undefined
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
@@ -57,7 +55,7 @@ const UserDetail = () => {
     const escapedEmail = escapeHtml(email.trim());
 
     try {
-      const updatedUser = { username: escapedUsername, email: escapedEmail, role };
+      const updatedUser = { username: escapedUsername, email: escapedEmail };
 
       const res = await axios.put(`http://localhost:5000/api/user/${id}`, updatedUser);
       if (res.data.success) {
@@ -68,7 +66,6 @@ const UserDetail = () => {
       }
     } catch (err) {
       if (err.response && err.response.data && err.response.data.message) {
-        alert(err.response.data.message)
         setErrorMessage(err.response.data.message);
       } else {
         setErrorMessage('Failed to update user');
@@ -90,38 +87,51 @@ const UserDetail = () => {
   return (
     <MainContainer>
       <Helmet>
-        <title>Update User Detail</title>
+        <title>User Detail</title>
       </Helmet>
-      <FormContainer>
-        <Title>Update User Detail</Title>
-        <Form>
-          <FormGroup>
-            <Label>Username:</Label>
-            <Input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
-          </FormGroup>
-          <FormGroup>
-            <Label>Email:</Label>
-            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          </FormGroup>
-          <FormGroup>
-            <Label>Role:</Label>
-            <RoleContainer>
-              <RoleLabel>
-                <Input type="radio" value="user" checked={role === 'user'} onChange={(e) => setRole(e.target.value)} />
-                User
-              </RoleLabel>
-              <RoleLabel>
-                <Input type="radio" value="admin" checked={role === 'admin'} onChange={(e) => setRole(e.target.value)} />
-                Admin
-              </RoleLabel>
-            </RoleContainer>
-          </FormGroup>
-          {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-          <Button onClick={handleUpdate}>Update User</Button>
-          <Button onClick={handleDelete}>Delete User</Button>
-          <StyledLink to="/users">Back to Users</StyledLink>
-        </Form>
-      </FormContainer>
+      <TableContainer>
+        <Title>User Details</Title>
+        <Table>
+          <tbody>
+            <TableRow>
+              <TableHeader>ID:</TableHeader>
+              <TableData>{user.id}</TableData>
+            </TableRow>
+            <TableRow>
+              <TableHeader>Username:</TableHeader>
+              <TableData>
+                <Input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+              </TableData>
+            </TableRow>
+            <TableRow>
+              <TableHeader>Email:</TableHeader>
+              <TableData>
+                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              </TableData>
+            </TableRow>
+            <ErrorContainer>
+              {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+            </ErrorContainer>
+            <TableRow>
+              <TableHeader>Role:</TableHeader>
+              <TableData>{user.role}</TableData>
+            </TableRow>
+            <TableRow>
+              <TableHeader>Is Verified:</TableHeader>
+              <TableData>{user.is_verified ? 'Yes' : 'No'}</TableData>
+            </TableRow>
+            <TableRow>
+              <TableHeader>Locked Until:</TableHeader>
+              <TableData>{user.locked_until || 'N/A'}</TableData>
+            </TableRow>
+          </tbody>
+        </Table>
+        <ButtonGroup>
+          <UpdateButton onClick={handleUpdate}>Update User</UpdateButton>
+          <DeleteButton onClick={handleDelete}>Delete User</DeleteButton>
+        </ButtonGroup>
+        <StyledLink to="/users">Back to Users</StyledLink>
+      </TableContainer>
     </MainContainer>
   );
 };
@@ -137,34 +147,39 @@ const MainContainer = styled.div`
   background-color: #fff;
 `;
 
-const FormContainer = styled.div`
-  width: 20%;
+const TableContainer = styled.div`
+  width: 50%;
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 2rem;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  max-width: 600px;
+  align-items: center; 
+  max-width: 800px;
 `;
 
-const Form = styled.form`
+const Table = styled.table`
   width: 100%;
+  border-collapse: collapse;
 `;
 
-const FormGroup = styled.div`
-  width: 100%;
-  margin-bottom: 1em;
+const TableRow = styled.tr`
+  border-bottom: 1px solid #ddd;
+`;
+
+const TableHeader = styled.th`
+  text-align: left;
+  padding: 0.5rem;
+  font-weight: bold;
+`;
+
+const TableData = styled.td`
+  padding: 0.5rem;
 `;
 
 const Title = styled.h2`
   text-align: center;
   margin-bottom: 2rem;
-`;
-
-const Label = styled.label`
-  display: block;
-  margin-bottom: 0.5em;
 `;
 
 const Input = styled.input`
@@ -183,26 +198,48 @@ const Input = styled.input`
     box-shadow: 0 0 8px rgba(135, 206, 235, 0.8);
   }
 `;
+const ButtonGroup = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 1em; 
+  width: 100%;
+  margin-top: 1em; 
+`;
+
 
 const Button = styled.button`
-  width: 50%;
   height: 50px;
-  padding: 0.25rem;
+  padding: 0.25rem 2rem;
   font-size: 1.2rem;
   color: #FFFFFF;
   border: none;
   outline: none;
   cursor: pointer;
-  background-color: #007BFF;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 10px;
-  margin-top: .5em;
+  margin: 0;
 
   &:hover {
-    background-color: #0056b3;
     transform: scale(1.05);
   }
 `;
+
+const UpdateButton = styled(Button)`
+  background-color: #007BFF;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
+const DeleteButton = styled(Button)`
+  background-color: #FF4C4C;
+
+  &:hover {
+    background-color: #e03c3c;
+  }
+`;
+
 
 const ErrorMessage = styled.p`
   color: red;
@@ -218,14 +255,9 @@ const StyledLink = styled(Link)`
     text-decoration: underline;
   }
 `;
-
-const RoleContainer = styled.div`
-  display: flex;
-  gap: 1rem;
+const ErrorContainer = styled.div`
+  width: 100%;
+  text-align: center; 
+  margin-top: 1em;
 `;
 
-const RoleLabel = styled.label`
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-`;

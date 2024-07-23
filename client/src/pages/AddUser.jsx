@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { Helmet } from 'react-helmet';
 
 const escapeHtml = (unsafe) => {
   const map = {
@@ -121,6 +122,9 @@ const AddUser = () => {
 
   return (
     <Container>
+      <Helmet>
+        <title>Add User</title>
+      </Helmet>
       <Title>Add User</Title>
       {errorMessage.server && <p style={{ color: 'red' }}>{errorMessage.server}</p>}
       <form onSubmit={handleAddUser}>

@@ -9,7 +9,7 @@ import VerifyEmail from './components/VerifyEmail..jsx';
 import UserProfile from './pages/UserProfile';
 import UserList from './pages/UserList';
 import AddUser from './pages/AddUser.jsx';
-import UpdateUserID from './pages/UpdateUserID';
+import UserID from './pages/UserID.jsx';
 import Navbar from './components/Navbar';
 
 
@@ -30,7 +30,7 @@ const App = () => {
           <Route element={<ProtectedRoute requiredRole="admin" />}>
             <Route path="/users" element={<UserList />} />
             <Route path="/add-user" element={<AddUser />} />
-            <Route path="/user/:id" element={<UpdateUserID />} />
+            <Route path="/user/:id" element={<UserID />} />
           </Route>
 
         </Routes>

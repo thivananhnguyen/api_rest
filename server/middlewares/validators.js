@@ -38,7 +38,6 @@ const addUserValidator = [
 const updateUserValidator = [
     check('username', 'Username is required').notEmpty(),
     check('email', 'Valid email is required').isEmail(),
-    check('role', 'Role is required').isIn(['user', 'admin'])
 ];
 
 module.exports = {

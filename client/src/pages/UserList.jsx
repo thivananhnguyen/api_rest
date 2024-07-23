@@ -60,8 +60,8 @@ const UsersList = () => {
           <tbody>
             {users.map(user => (
               <TableRow key={user.id}>
-                <TableCell>{user.id}</TableCell>
-                <TableCell><Link to={`/user/${user.id}`}>{user.username}</Link></TableCell>
+                <TableCell><Link to={`/user/${user.id}`}>{user.id}</Link></TableCell>
+                <TableCell>{user.username}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.role}</TableCell>
                 <TableCell>{user.is_verified ?  'Yes' : 'No'}</TableCell>
@@ -145,14 +145,14 @@ const TableCell = styled.td`
 const Button = styled.button`
   margin-right: 10px;
   padding: 5px 10px;
-  background-color: #4caf50;
+  background-color: #007BFF;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 
   &:hover {
-    background-color: #45a049;
+    background-color: #0056b3;
   }
 
   &:last-child {

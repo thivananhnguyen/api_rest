@@ -79,19 +79,35 @@ const getAllUsers = async () => {
 };
 
 // ------------UPDATE USER BY ID -------------------/
- const updateUser = async (id, username, email, role = 'user') => {
+const updateUser = async (id, username, email) => {
   try {
-    const query = {
-      text: 'UPDATE users SET username = $1, email = $2, role = $3 WHERE id = $4 RETURNING *',
-      values: [username, email, role, id],
-    };
-    const res = await pool.query(query);
-    return res.rows[0];
+    const userQuery = 'SELECT * FROM users WHERE id = $1';
+    const userRes = await pool.query(userQuery, [id]);
+
+    if (userRes.rows.length === 0) {
+      throw new Error('User not found');
+    }
+
+    const currentUser = userRes.rows[0];
+
+    const updatedUsername = username || currentUser.username;
+    const updatedEmail = email || currentUser.email;
+
+    const updateQuery = `
+      UPDATE users 
+      SET username = $1, email = $2
+      WHERE id = $3
+      RETURNING *;
+    `;
+    const updateValues = [updatedUsername, updatedEmail, id];
+    const updateRes = await pool.query(updateQuery, updateValues);
+
+    return updateRes.rows[0];
   } catch (error) {
     console.error('Error updating user:', error);
     throw error;
   }
-}; 
+};
 
 // ------------ DELETE USER BY ID -------------------/
 const deleteUser = async (id) => {
@@ -125,7 +141,6 @@ const getUserByEmail = async (email) => {
 
 module.exports = {
   createUser,
-/*   verifyUserEmail, */
   updateUserVerification,
   addUser,
   getUserById,
